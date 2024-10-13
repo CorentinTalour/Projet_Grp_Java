@@ -10,8 +10,9 @@ import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "company")
-@Getter @Setter
-public class Comapny {
+@Getter
+@Setter
+public class Company {
     @Id
     @UuidGenerator
     @Column(name = "id")
