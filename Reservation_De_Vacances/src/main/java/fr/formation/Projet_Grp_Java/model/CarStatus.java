@@ -10,7 +10,6 @@ import lombok.Setter;
 @Getter @Setter
 public class CarStatus {
     @Id
-    @UuidGenerator
     @Column(name = "carStatus_id")
     private String id;
 

@@ -8,9 +8,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateCarRequest {
+public class CreateOrUpdateCarRequest {
     private String carBrand;
     private String carModel;
     private Double carDailyPrice;
-    //private CarStatus carStatus;
+    private String carStatusId;
 }
