@@ -12,13 +12,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Table(name = "utilisateur")
 @Entity
-public class User {
+public class Utilisateur {
 
     @Id
     @UuidGenerator
@@ -26,14 +27,14 @@ public class User {
     private String id;
 
     @Column(name = "user_name")
-    private String nom;
+    private String name;
 
-    private String prenom;
+    private String surname;
 
     @Column(name = "has_driving_licence")
     private boolean hasDrivingLicence;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = false)
     private String mail;
 
     private String telephone;

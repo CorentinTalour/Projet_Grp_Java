@@ -9,11 +9,11 @@ import lombok.Setter;
 @Setter
 @Builder
 public class HotelResponse {
-    private String id; // Inclure l'ID généré
+    private String id;
     private String nom;
     private String mail;
     private String telephone;
     private String ville;
     private String adresse;
-    // Tu peux également ajouter des informations supplémentaires ici
+
 }
