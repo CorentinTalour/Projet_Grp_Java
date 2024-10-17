@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -68,6 +70,30 @@ public class UserController {
 
         utilisateurRepository.save(user);
         return "User created successfully";
+    }
+
+    @PutMapping("/{id}")
+    public String update(@PathVariable String id, @RequestBody UserRequest request) {
+        log.debug("Updating video {} ...", id);
+
+        Utilisateur user = this.utilisateurRepository.findById(id).orElseThrow(UserNotFoundException::new);
+
+        BeanUtils.copyProperties(request, user);
+
+        this.utilisateurRepository.save(user);
+
+        log.debug("Utilisateur {} updated!", id);
+
+        return user.getId();
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable String id) {
+        log.debug("Deleting utilisateur {} ...", id);
+
+        this.utilisateurRepository.deleteById(id);
+
+        log.debug("Utilisateur {} deleted!", id);
     }
 
     private UserResponse convert(Utilisateur utilisateur) {
