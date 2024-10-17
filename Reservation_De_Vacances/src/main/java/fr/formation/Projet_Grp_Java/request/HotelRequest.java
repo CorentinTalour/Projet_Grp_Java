@@ -1,7 +1,5 @@
 package fr.formation.Projet_Grp_Java.request;
 
-import org.hibernate.annotations.UuidGenerator;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

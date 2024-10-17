@@ -2,7 +2,6 @@ package fr.formation.Projet_Grp_Java.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
