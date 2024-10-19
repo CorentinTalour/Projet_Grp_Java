@@ -2,7 +2,18 @@ package fr.formation.Projet_Grp_Java.api;
 
 import java.util.List;
 
+import fr.formation.Projet_Grp_Java.request.AuthRequest;
+import fr.formation.Projet_Grp_Java.response.AuthResponse;
+import fr.formation.Projet_Grp_Java.security.JwtUtil;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +38,41 @@ import lombok.extern.log4j.Log4j2;
 public class UserController {
 
     private final UtilisateurRepository utilisateurRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+
+
+    @PostMapping("/auth")
+    public AuthResponse auth(@Valid @RequestBody AuthRequest request) {
+        log.debug("Authenticating requested for user {} ...", request.getUsername());
+
+        try {
+            Authentication authentication = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+
+            authentication = this.authenticationManager.authenticate(authentication);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            log.debug("User {} authenticated! Generating token ...", request.getUsername());
+
+            String token = JwtUtil.generate(this.utilisateurRepository.findByUsername(request.getUsername()).orElseThrow(UserNotFoundException::new));
+
+            log.debug("Token *** generated!");
+
+            return AuthResponse.builder()
+                    .success(true)
+                    .token(token)
+                    .build()
+                    ;
+        }
+
+        catch (BadCredentialsException e) {
+            return AuthResponse.builder()
+                    .success(false)
+                    .build()
+                    ;
+        }
+    }
 
     @GetMapping
     public List<UserResponse> findAll() {
@@ -51,16 +97,16 @@ public class UserController {
     }
 
     @PostMapping
-    // @ResponseStatus(HttpStatus.CREATED)
-
+    //@ResponseStatus(HttpStatus.CREATED)
     public String createUser(@RequestBody UserRequest userRequest) {
 
         Utilisateur user = new Utilisateur();
 
         user.setName(userRequest.getName());
-        user.setSurname(userRequest.getSurname());
+        user.setUsername(userRequest.getUsername());
+        user.setPassword(this.passwordEncoder.encode(userRequest.getPassword()));
         user.setMail(userRequest.getMail());
-        user.setTelephone(userRequest.getTelephone());
+        user.setPhone(userRequest.getTelephone());
         user.setHasDrivingLicence(userRequest.isHasDrivingLicence());
 
         utilisateurRepository.save(user);
@@ -68,6 +114,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public String update(@PathVariable String id, @RequestBody UserRequest request) {
         log.debug("Updating video {} ...", id);
 
@@ -83,6 +130,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public void deleteById(@PathVariable String id) {
         log.debug("Deleting utilisateur {} ...", id);
 

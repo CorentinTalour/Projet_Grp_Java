@@ -20,18 +20,26 @@ public class Utilisateur {
     @Column(name = "user_id")
     private String id;
 
-    @Column(name = "user_name")
+    @Column(name = "user_name", nullable = false)
     private String name;
 
-    private String surname;
+    @Column(name = "user_username", nullable = false)
+    private String username;
 
-    @Column(name = "has_driving_licence")
+    @Column(name = "user_password", nullable = false)
+    private String password;
+
+    @Column(name = "user_has_driving_licence", nullable = false)
     private boolean hasDrivingLicence;
 
-    @Column(nullable = false, unique = false)
+    @Column(name = "user_mail", nullable = false, unique = false)
     private String mail;
 
-    private String telephone;
+    @Column(name = "user_phone", nullable = false, unique = false)
+    private String phone;
+
+    @Column(name = "usr_admin", nullable = false)
+    private boolean admin;
 
     // Relation avec les réservations de voitures (One-to-Many)
     /*
