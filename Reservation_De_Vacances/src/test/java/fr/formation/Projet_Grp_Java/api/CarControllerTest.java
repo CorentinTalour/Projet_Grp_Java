@@ -52,7 +52,7 @@ public class CarControllerTest {
     private MockMvc mockMvc;
 
     @InjectMocks
-    private CarController ctrl;
+    private CarApiController ctrl;
 
     @BeforeEach
     public void setup() {

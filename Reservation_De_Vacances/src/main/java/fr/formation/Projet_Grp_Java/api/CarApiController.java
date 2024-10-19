@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/api/car")
 @RequiredArgsConstructor
 @Log4j2
-public class CarController {
+public class CarApiController {
     private final CarRepository repository;
     private final CarStatusRepository carStatusRepository;
 
