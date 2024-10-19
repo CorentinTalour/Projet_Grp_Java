@@ -28,6 +28,7 @@ public class CarController {
     private final CarStatusRepository carStatusRepository;
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<CarResponse> findAll() {
         log.debug("Finding all car ...");
 
@@ -38,6 +39,7 @@ public class CarController {
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
         public CarByIdResponse findById(@PathVariable String id) {
         log.debug("Finding car {} ...", id);
 

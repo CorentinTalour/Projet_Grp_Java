@@ -20,10 +20,10 @@ public class Car {
     @Column(name = "car_model", length = 100, nullable = false)
     private String carModel;
 
-    @Column(name = "car_daily_price", columnDefinition = "double precision")
+    @Column(name = "car_daily_price", columnDefinition = "double precision" , nullable = false)
     private Double carDailyPrice;
 
-    @OneToOne
-    @JoinColumn(name = "car_carStatus_id")
+    @ManyToOne
+    @JoinColumn(name = "car_carStatus_id" , nullable = false)
     private CarStatus carStatus;
 }
