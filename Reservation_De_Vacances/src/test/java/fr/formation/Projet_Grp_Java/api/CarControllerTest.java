@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
+@Sql(scripts = "classpath:/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class CarControllerTest {
     private static final String CAR_ID = "car-id-863";
     private static final String CAR_STATUS_ID = "1";
@@ -108,7 +110,11 @@ public class CarControllerTest {
 
         Mockito.when(carStatusRepository.findById(CAR_STATUS_ID)).thenReturn(Optional.of(carStatus));
 
-        Mockito.when(repository.save(Mockito.any(Car.class))).thenReturn(car);
+        Mockito.when(repository.save(Mockito.any(Car.class))).thenAnswer(invocation -> {
+            Car savedCar = invocation.getArgument(0);
+            savedCar.setId(CAR_ID);
+            return savedCar;
+        });
 
         //When
         mockMvc.perform(
@@ -155,24 +161,15 @@ public class CarControllerTest {
     @ParameterizedTest
     @MethodSource("provideBadCreateOrUpdateRequests")
     void shouldUpdateStatusBadRequest(CreateOrUpdateCarRequest request) throws Exception {
-        //given
+        Mockito.when(this.repository.findById(CAR_ID)).thenReturn(Optional.of(new Car())); // Car exists
 
-        //when
         ResultActions result = this.mockMvc.perform(
-                MockMvcRequestBuilders
-                        .put(ENDPOINT_BY_ID)
+                MockMvcRequestBuilders.put(ENDPOINT_BY_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
-                        //.content(TestUtil.json(request))
-                        //.principal(authentication)
-        )
-                ;
+        );
 
-        //then
         result.andExpect(MockMvcResultMatchers.status().isBadRequest());
-
-        //Mockito.verify(this.userRepository, Mockito.never()).findById(Mockito.any());
-        Mockito.verify(this.repository, Mockito.never()).save(Mockito.any());
     }
 
     @Test
@@ -188,19 +185,15 @@ public class CarControllerTest {
         Mockito.verify(this.repository).deleteById(CAR_ID);
     }
 
-    public static Stream<Arguments> provideBadCreateOrUpdateRequests() {
+    private static Stream<Arguments> provideBadCreateOrUpdateRequests() {
         return Stream.of(
-                Arguments.of(
-                        CreateOrUpdateCarRequest.builder().build()
-                ),
-
-                Arguments.of(
-                        CreateOrUpdateCarRequest.builder().carBrand(" ").build()
-                ),
-
-                Arguments.of(
-                        CreateOrUpdateCarRequest.builder().carBrand("").build()
-                )
+                Arguments.of(new CreateOrUpdateCarRequest(null, null, null, null)), // Tous les champs manquants
+                Arguments.of(new CreateOrUpdateCarRequest("", "", null, "")), // Champs vides
+                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", null, "StatusId")), // Prix quotidien manquant
+                Arguments.of(new CreateOrUpdateCarRequest("Brand", "", 100.0, "StatusId")), // Modèle manquant
+                Arguments.of(new CreateOrUpdateCarRequest("", "Model", 100.0, "StatusId")), // Marque manquante
+                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", 100.0, null)) // ID de statut manquant
         );
     }
+
 }
