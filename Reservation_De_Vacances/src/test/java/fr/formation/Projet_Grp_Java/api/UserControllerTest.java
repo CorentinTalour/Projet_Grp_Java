@@ -229,11 +229,32 @@ public class UserControllerTest {
 
                 Arguments.of(
                         UserRequest.builder()
+                                .name("")
                                 .username(USER_USERNAME)
                                 .password(USER_PASSWORD)
                                 .hasDrivingLicence(true)
                                 .mail("nomUtilisateur@gmail.com")
                                 .telephone("00.01.02.03.04")
+                                .build()
+                ),
+                Arguments.of(
+                        UserRequest.builder()
+                                .name(USER_NAME)
+                                .username(USER_USERNAME)
+                                .password(USER_PASSWORD)
+                                .hasDrivingLicence(true)
+                                .mail("")
+                                .telephone("00.01.02.03.04")
+                                .build()
+                ),
+                Arguments.of(
+                        UserRequest.builder()
+                                .name(USER_NAME)
+                                .username(USER_USERNAME)
+                                .password(USER_PASSWORD)
+                                .hasDrivingLicence(true)
+                                .mail("nomUtilisateur@gmail.com")
+                                .telephone("")
                                 .build()
                 )
         );
