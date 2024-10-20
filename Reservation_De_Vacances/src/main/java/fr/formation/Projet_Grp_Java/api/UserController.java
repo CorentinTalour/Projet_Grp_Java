@@ -7,6 +7,7 @@ import fr.formation.Projet_Grp_Java.response.AuthResponse;
 import fr.formation.Projet_Grp_Java.security.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
