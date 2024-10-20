@@ -1,18 +1,17 @@
-package fr.formation.Projet_Grp_Java.request;
+package fr.formation.Projet_Grp_Java.response;
 
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
 @Getter
-@NoArgsConstructor
-
-public class BookingRequest {
+@Setter
+@Builder
+public class BookingResponse {
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dateBegin;
@@ -21,5 +20,5 @@ public class BookingRequest {
     private LocalDateTime dateEnd;
 
     private float price;
-
 }
+

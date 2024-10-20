@@ -1,6 +1,5 @@
 package fr.formation.Projet_Grp_Java.api;
 
-package fr.formation.Projet_Grp_Java.api;
 
 import java.util.List;
 
