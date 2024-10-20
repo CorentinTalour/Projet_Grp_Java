@@ -28,7 +28,7 @@ public class Utilisateur {
     @Column(name = "has_driving_licence")
     private boolean hasDrivingLicence;
 
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false)
     private String mail;
 
     private String telephone;
