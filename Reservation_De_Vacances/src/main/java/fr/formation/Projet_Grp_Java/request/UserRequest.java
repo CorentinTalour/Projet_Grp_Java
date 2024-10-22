@@ -25,6 +25,6 @@ public class UserRequest {
     private String mail;
 
     @NotBlank
-    private String telephone;
+    private String phone;
 
 }

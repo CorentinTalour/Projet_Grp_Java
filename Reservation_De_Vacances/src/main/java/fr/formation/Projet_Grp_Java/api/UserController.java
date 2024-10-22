@@ -7,7 +7,6 @@ import fr.formation.Projet_Grp_Java.response.AuthResponse;
 import fr.formation.Projet_Grp_Java.security.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -101,7 +100,7 @@ public class UserController {
         user.setUsername(userRequest.getUsername());
         user.setPassword(this.passwordEncoder.encode(userRequest.getPassword()));
         user.setMail(userRequest.getMail());
-        user.setPhone(userRequest.getTelephone());
+        user.setPhone(userRequest.getPhone());
         user.setHasDrivingLicence(userRequest.isHasDrivingLicence());
 
         utilisateurRepository.save(user);
