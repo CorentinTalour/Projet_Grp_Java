@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -72,6 +73,7 @@ public class CarApiController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("isAuthenticated()")
     public String update(@PathVariable String id, @Valid @RequestBody CreateOrUpdateCarRequest request) {
         log.debug("Updating car {} ...", id);
 
@@ -96,6 +98,7 @@ public class CarApiController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public void deleteById(@PathVariable String id) {
         log.debug("Deleting car {} ...", id);
 
