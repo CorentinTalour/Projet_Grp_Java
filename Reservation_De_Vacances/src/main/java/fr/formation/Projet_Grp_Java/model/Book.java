@@ -8,10 +8,14 @@ import org.hibernate.annotations.UuidGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.hibernate.annotations.UuidGenerator;
+
 @Entity
 @Table(name = "book")
-@Getter @Setter
+@Getter
+@Setter
 public class Book {
+
     @Id
     @UuidGenerator
     @Column(name = "id")
