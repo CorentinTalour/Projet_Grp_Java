@@ -161,7 +161,6 @@ public class CarControllerTest {
     @ParameterizedTest
     @MethodSource("provideBadCreateOrUpdateRequests")
     void shouldUpdateStatusBadRequest(CreateOrUpdateCarRequest request) throws Exception {
-        Mockito.when(this.repository.findById(CAR_ID)).thenReturn(Optional.of(new Car())); // Car exists
 
         ResultActions result = this.mockMvc.perform(
                 MockMvcRequestBuilders.put(ENDPOINT_BY_ID)
@@ -172,27 +171,140 @@ public class CarControllerTest {
         result.andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
+
+    @Test
+    void shouldUpdateCarStatusOk() throws Exception {
+        // Given
+        CreateOrUpdateCarRequest request = CreateOrUpdateCarRequest.builder()
+                .carBrand("UpdatedBrand")
+                .carModel("UpdatedModel")
+                .carDailyPrice(150.0)
+                .carStatusId(CAR_STATUS_ID)
+                .build();
+
+        Car existingCar = new Car();
+        existingCar.setId(CAR_ID);
+        existingCar.setCarBrand("OldBrand");
+        existingCar.setCarModel("OldModel");
+        existingCar.setCarDailyPrice(100.0);
+
+        CarStatus carStatus = new CarStatus();
+        carStatus.setId(CAR_STATUS_ID);
+
+        // Mock repository responses
+        Mockito.when(this.repository.findById(CAR_ID)).thenReturn(Optional.of(existingCar));
+        Mockito.when(this.carStatusRepository.findById(CAR_STATUS_ID)).thenReturn(Optional.of(carStatus));
+        Mockito.when(this.repository.save(Mockito.any(Car.class))).thenReturn(existingCar);
+
+        // When
+        ResultActions result = mockMvc.perform(
+                MockMvcRequestBuilders
+                        .put(ENDPOINT_BY_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+        );
+
+        // Then
+        result.andExpect(status().isOk());
+        result.andExpect(content().string(CAR_ID));
+
+        Mockito.verify(this.repository).findById(CAR_ID);
+        Mockito.verify(this.carStatusRepository).findById(CAR_STATUS_ID);
+        Mockito.verify(this.repository).save(Mockito.any(Car.class));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenCarDoesNotExist() throws Exception {
+        // Given
+        CreateOrUpdateCarRequest request = CreateOrUpdateCarRequest.builder()
+                .carBrand("UpdatedBrand")
+                .carModel("UpdatedModel")
+                .carDailyPrice(150.0)
+                .carStatusId(CAR_STATUS_ID)
+                .build();
+
+        // Mock repository responses
+        Mockito.when(this.repository.findById(CAR_ID)).thenReturn(Optional.empty());
+
+        // When
+        ResultActions result = mockMvc.perform(
+                MockMvcRequestBuilders
+                        .put(ENDPOINT_BY_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+        );
+
+        // Then
+        result.andExpect(status().isNotFound());
+
+        Mockito.verify(this.repository).findById(CAR_ID);
+        Mockito.verify(this.repository, Mockito.never()).save(Mockito.any(Car.class));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenInvalidData() throws Exception {
+        // Given
+        CreateOrUpdateCarRequest request = CreateOrUpdateCarRequest.builder()
+                .carBrand("")
+                .carModel("")
+                .carDailyPrice(-100.0)
+                .carStatusId(null)
+                .build();
+
+        // When
+        ResultActions result = mockMvc.perform(
+                MockMvcRequestBuilders
+                        .put(ENDPOINT_BY_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+        );
+
+        // Then
+        result.andExpect(status().isBadRequest());
+    }
+
     @Test
     void shouldDeleteByIdStatusOk() throws Exception {
-        //given
+        // Given
+        Mockito.doNothing().when(repository).deleteById(CAR_ID);
 
-        //when
-        ResultActions result = this.mockMvc.perform(MockMvcRequestBuilders.delete(ENDPOINT_BY_ID));
+        // When
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+                .delete(ENDPOINT_BY_ID)
+                .contentType(MediaType.APPLICATION_JSON));
 
-        //then
-        result.andExpect(MockMvcResultMatchers.status().isOk());
+        // Then
+        result.andExpect(status().isOk());
 
-        Mockito.verify(this.repository).deleteById(CAR_ID);
+        // Verify that the repository's deleteById method is called with the correct ID
+        Mockito.verify(repository).deleteById(CAR_ID);
+    }
+
+    @Test
+    void shouldHandleExceptionDuringDelete() throws Exception {
+        // Given
+        // Simulate an exception when trying to delete a car by ID
+        Mockito.doThrow(new RuntimeException("Database error")).when(repository).deleteById(CAR_ID);
+
+        // When
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+                .delete(ENDPOINT_BY_ID)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // Then
+        result.andExpect(status().isOk()); // Even if an exception occurs, the controller doesn't return an error
+        // Verify that the repository's deleteById method was called
+        Mockito.verify(repository).deleteById(CAR_ID);
     }
 
     private static Stream<Arguments> provideBadCreateOrUpdateRequests() {
         return Stream.of(
-                Arguments.of(new CreateOrUpdateCarRequest(null, null, null, null)), // Tous les champs manquants
-                Arguments.of(new CreateOrUpdateCarRequest("", "", null, "")), // Champs vides
-                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", null, "StatusId")), // Prix quotidien manquant
-                Arguments.of(new CreateOrUpdateCarRequest("Brand", "", 100.0, "StatusId")), // Modèle manquant
-                Arguments.of(new CreateOrUpdateCarRequest("", "Model", 100.0, "StatusId")), // Marque manquante
-                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", 100.0, null)) // ID de statut manquant
+                Arguments.of(new CreateOrUpdateCarRequest(null, null, null, null)),
+                Arguments.of(new CreateOrUpdateCarRequest("", "", null, "")),
+                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", null, "StatusId")),
+                Arguments.of(new CreateOrUpdateCarRequest("Brand", "", 100.0, "StatusId")),
+                Arguments.of(new CreateOrUpdateCarRequest("", "Model", 100.0, "StatusId")),
+                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", 100.0, null))
         );
     }
 
