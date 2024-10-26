@@ -3,6 +3,8 @@ package fr.formation.Projet_Grp_Java.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,4 +36,11 @@ public class Booking {
 
     private float price;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private Utilisateur user;
+
+    @ManyToOne
+    @JoinColumn(name = "hotel_id", nullable = false)
+    private Hotel hotel;
 }

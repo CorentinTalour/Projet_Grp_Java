@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.formation.Projet_Grp_Java.exception.HotelNotFoundException;
+import fr.formation.Projet_Grp_Java.model.Company;
 import fr.formation.Projet_Grp_Java.model.Hotel;
+import fr.formation.Projet_Grp_Java.repo.CompanyRepository;
 import fr.formation.Projet_Grp_Java.repo.HotelRepository;
 import fr.formation.Projet_Grp_Java.request.HotelRequest;
 import fr.formation.Projet_Grp_Java.response.HotelResponse;
@@ -29,6 +31,7 @@ import lombok.extern.log4j.Log4j2;
 public class HotelController {
 
     private final HotelRepository hotelRepository;
+    private final CompanyRepository companyRepository;
 
     @GetMapping
     public List<HotelResponse> findAll() {
@@ -56,6 +59,9 @@ public class HotelController {
     @ResponseStatus(HttpStatus.CREATED)
 
     public String createHotel(@RequestBody HotelRequest hotelRequest) {
+
+        Company company = companyRepository.findById(hotelRequest.getCompanyId())
+                .orElseThrow(() -> new RuntimeException("Company not found"));
         Hotel hotel = new Hotel();
 
         hotel.setNom(hotelRequest.getNom());
@@ -63,6 +69,7 @@ public class HotelController {
         hotel.setTelephone(hotelRequest.getTelephone());
         hotel.setVille(hotelRequest.getVille());
         hotel.setAdresse(hotelRequest.getAdresse());
+        hotel.setCompany(company);
 
         // Sauvegardez l'utilisateur dans la base de données
         hotelRepository.save(hotel);

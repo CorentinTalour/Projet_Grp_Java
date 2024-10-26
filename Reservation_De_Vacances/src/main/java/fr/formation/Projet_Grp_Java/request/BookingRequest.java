@@ -21,5 +21,6 @@ public class BookingRequest {
     private LocalDateTime dateEnd;
 
     private float price;
-
+    private String user_id;
+    private String hotel_id;
 }

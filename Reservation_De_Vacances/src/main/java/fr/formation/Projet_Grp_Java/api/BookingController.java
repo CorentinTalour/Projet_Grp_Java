@@ -1,9 +1,9 @@
 package fr.formation.Projet_Grp_Java.api;
 
-
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,7 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.formation.Projet_Grp_Java.exception.BookingNotFoundException;
 import fr.formation.Projet_Grp_Java.model.Booking;
+
+import fr.formation.Projet_Grp_Java.model.Hotel;
+import fr.formation.Projet_Grp_Java.model.Utilisateur;
 import fr.formation.Projet_Grp_Java.repo.BookingRepository;
+
+import fr.formation.Projet_Grp_Java.repo.HotelRepository;
+import fr.formation.Projet_Grp_Java.repo.UtilisateurRepository;
 import fr.formation.Projet_Grp_Java.request.BookingRequest;
 import fr.formation.Projet_Grp_Java.response.BookingResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +36,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Log4j2
 public class BookingController {
 
+    @Autowired
     private final BookingRepository bookingRepository;
+
+    @Autowired
+    private final UtilisateurRepository utilisateurRepository;
+
+    @Autowired
+    private final HotelRepository hotelRepository;
 
     @GetMapping
     public List<BookingResponse> findAll() {
@@ -65,13 +78,21 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
 
-    public String createHotel(@RequestBody BookingRequest bookingRequest) {
+    public String createBooking(@RequestBody BookingRequest bookingRequest) {
+
+        Utilisateur user = utilisateurRepository.findById(bookingRequest.getUser_id())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Hotel hotel = hotelRepository.findById(bookingRequest.getHotel_id())
+                .orElseThrow(() -> new RuntimeException("Hotel not found"));
+
         Booking booking = new Booking();
 
         booking.setDateBegin(bookingRequest.getDateBegin());
         booking.setDateEnd(bookingRequest.getDateEnd());
         booking.setPrice(bookingRequest.getPrice());
-
+        booking.setUser(user);
+        booking.setHotel(hotel);
         // Sauvegardez l'utilisateur dans la base de données
         bookingRepository.save(booking);
         return "Your booking was successfully created ";
@@ -104,4 +125,3 @@ public class BookingController {
     }
 
 }
-
