@@ -27,4 +27,6 @@ public class UserRequest {
     @NotBlank
     private String phone;
 
+    @NotNull
+    private boolean admin;
 }
