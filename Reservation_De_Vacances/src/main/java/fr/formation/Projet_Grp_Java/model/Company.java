@@ -19,5 +19,5 @@ public class Company {
     private String id;
 
     @Column(name = "name", length = 50, nullable = false)
-    private String name;
+    private String nameAgency;
 }

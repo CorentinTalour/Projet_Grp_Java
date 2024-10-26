@@ -14,6 +14,5 @@ public class HotelRequest {
     private String telephone;
     private String ville;
     private String adresse;
-    // agenceId pourrait être ajouté si tu souhaites inclure une relation vers une
-    // agence
+    private String companyId;
 }

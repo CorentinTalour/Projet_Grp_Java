@@ -15,5 +15,5 @@ public class UserResponse {
     private String mail;
     private String telephone;
     private boolean has_driving_licence;
-
+    private String companyId;
 }

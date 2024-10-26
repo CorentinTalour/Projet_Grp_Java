@@ -4,9 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-@Getter @Setter
+@Getter
+@Setter
 @Builder
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRequest {
 
     @NotBlank
@@ -27,4 +29,5 @@ public class UserRequest {
     @NotBlank
     private String telephone;
 
+    private String companyId;
 }

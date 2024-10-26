@@ -5,6 +5,8 @@ import org.hibernate.annotations.UuidGenerator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,6 +42,11 @@ public class Utilisateur {
 
     @Column(name = "usr_admin", nullable = false)
     private boolean admin;
+
+    // Relation avec l'agence (Many-to-One)
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
 
     // Relation avec les réservations de voitures (One-to-Many)
     /*
