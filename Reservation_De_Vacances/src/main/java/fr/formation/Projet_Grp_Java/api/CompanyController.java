@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,7 @@ public class CompanyController {
     private final CompanyRepository companyRepository;
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<CompanyResponse> findAll() {
         log.debug("Finding all companies...");
 
@@ -42,6 +44,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public CompanyResponse findById(@PathVariable String id) {
         log.debug("Finding video {} ...", id);
 
@@ -54,6 +57,7 @@ public class CompanyController {
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
 
     public String createHotel(@RequestBody CompanyRequest companyRequest) {
@@ -67,6 +71,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public String update(@PathVariable String id, @RequestBody CompanyRequest companyRequest) {
         log.debug("Updating company {} ...", id);
 
@@ -82,6 +87,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public void deleteById(@PathVariable String id) {
         log.debug("Deleting company {} ...", id);
 

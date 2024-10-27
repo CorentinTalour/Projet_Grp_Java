@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,6 +57,7 @@ public class HotelController {
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
 
     public String createHotel(@RequestBody HotelRequest hotelRequest) {
@@ -77,6 +79,7 @@ public class HotelController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public String update(@PathVariable String id, @RequestBody HotelRequest hotelRequest) {
         log.debug("Updating video {} ...", id);
 
@@ -92,6 +95,7 @@ public class HotelController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public void deleteById(@PathVariable String id) {
         log.debug("Deleting video {} ...", id);
 

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +47,7 @@ public class BookingController {
     private final HotelRepository hotelRepository;
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<BookingResponse> findAll() {
         log.debug("Finding all videos ...");
 
@@ -56,6 +58,7 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public BookingResponse findById(@PathVariable String id) {
         log.debug("Finding booking {} ...", id);
 
@@ -76,6 +79,7 @@ public class BookingController {
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
 
     public String createBooking(@RequestBody BookingRequest bookingRequest) {
@@ -99,6 +103,7 @@ public class BookingController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public String update(@PathVariable String id, @RequestBody BookingRequest bookingRequest) {
         log.debug("Updating booking {} ...", id);
 
@@ -114,6 +119,7 @@ public class BookingController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public String deleteById(@PathVariable String id) {
         log.debug("Deleting booking {} ...", id);
 
