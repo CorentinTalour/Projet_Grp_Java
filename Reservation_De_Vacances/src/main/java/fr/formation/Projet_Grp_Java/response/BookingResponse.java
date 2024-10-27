@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import fr.formation.Projet_Grp_Java.model.BookingStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,5 +21,7 @@ public class BookingResponse {
     private LocalDateTime dateEnd;
 
     private float price;
+
+    private BookingStatus bookingStatus;
 }
 

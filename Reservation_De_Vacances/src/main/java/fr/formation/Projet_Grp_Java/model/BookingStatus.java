@@ -16,5 +16,5 @@ public class BookingStatus {
     private String id;
 
     @Column(name = "bookingStatus_name", length = 100, nullable = false)
-    private String carStatusName;
+    private String bookingStatusName;
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import fr.formation.Projet_Grp_Java.exception.BookingStatusNotFoundException;
 import fr.formation.Projet_Grp_Java.model.BookingStatus;
 import fr.formation.Projet_Grp_Java.repo.BookingStatusRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,21 @@ public class BookingController {
     private final BookingRepository bookingRepository;
     private final BookingStatusRepository bookingStatusRepository;
     private final BookingStatusRepository bookingStatus;
+
+    @PostConstruct
+    public void init() {
+        if (bookingStatus.count() == 0) {
+            BookingStatus carStatusDispo = new BookingStatus();
+            carStatusDispo.setId("1");
+            carStatusDispo.setBookingStatusName("En cours");
+            bookingStatus.save(carStatusDispo);
+
+            BookingStatus carStatusLouee = new BookingStatus();
+            carStatusLouee.setId("2");
+            carStatusLouee.setBookingStatusName("Annulée");
+            bookingStatus.save(carStatusLouee);
+        }
+    }
 
     @GetMapping
     public List<BookingResponse> findAll() {
