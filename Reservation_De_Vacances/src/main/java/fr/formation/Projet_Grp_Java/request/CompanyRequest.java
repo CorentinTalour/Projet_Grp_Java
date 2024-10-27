@@ -10,4 +10,6 @@ import lombok.Setter;
 public class CompanyRequest {
 
     private String nameAgency;
+
+    private String companyTypeId;
 }
