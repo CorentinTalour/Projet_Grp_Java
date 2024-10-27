@@ -54,6 +54,7 @@ public class CarApiController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public String create(@Valid @RequestBody CreateOrUpdateCarRequest request) {
         log.debug("Creating car ...");
 
@@ -73,7 +74,7 @@ public class CarApiController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable String id, @Valid @RequestBody CreateOrUpdateCarRequest request) {
         log.debug("Updating car {} ...", id);
 
@@ -98,7 +99,7 @@ public class CarApiController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(@PathVariable String id) {
         log.debug("Deleting car {} ...", id);
 
