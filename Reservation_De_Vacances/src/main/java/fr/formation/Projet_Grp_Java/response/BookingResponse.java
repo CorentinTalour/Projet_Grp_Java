@@ -20,5 +20,7 @@ public class BookingResponse {
     private LocalDateTime dateEnd;
 
     private float price;
+
+
 }
 

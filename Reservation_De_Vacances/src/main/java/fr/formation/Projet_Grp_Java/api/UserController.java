@@ -104,7 +104,7 @@ public class UserController {
         user.setUsername(userRequest.getUsername());
         user.setPassword(this.passwordEncoder.encode(userRequest.getPassword()));
         user.setMail(userRequest.getMail());
-        user.setPhone(userRequest.getTelephone());
+        user.setPhone(userRequest.getPhone());
         user.setHasDrivingLicence(userRequest.isHasDrivingLicence());
         user.setCompany(company);
 
