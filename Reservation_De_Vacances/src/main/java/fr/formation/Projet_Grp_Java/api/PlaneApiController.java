@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,6 +51,7 @@ public class PlaneApiController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public String create(@Valid @RequestBody CreateOrUpdatePlaneRequest request) {
         log.debug("Creating plane ...");
 
@@ -65,7 +67,7 @@ public class PlaneApiController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    //@PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable String id, @Valid @RequestBody CreateOrUpdatePlaneRequest request) {
         log.debug("Updating Plane {} ...", id);
 
@@ -81,7 +83,7 @@ public class PlaneApiController {
     }
 
     @DeleteMapping("/{id}")
-    //@PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(@PathVariable String id) {
         log.debug("Deleting plane {} ...", id);
 
