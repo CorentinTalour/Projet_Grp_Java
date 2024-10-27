@@ -22,4 +22,6 @@ public class BookingRequest {
 
     private float price;
 
+    private String bookingStatusId;
+
 }

@@ -3,6 +3,9 @@ package fr.formation.Projet_Grp_Java.api;
 
 import java.util.List;
 
+import fr.formation.Projet_Grp_Java.exception.BookingStatusNotFoundException;
+import fr.formation.Projet_Grp_Java.model.BookingStatus;
+import fr.formation.Projet_Grp_Java.repo.BookingStatusRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +34,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class BookingController {
 
     private final BookingRepository bookingRepository;
+    private final BookingStatusRepository bookingStatusRepository;
+    private final BookingStatusRepository bookingStatus;
 
     @GetMapping
     public List<BookingResponse> findAll() {
@@ -64,13 +69,16 @@ public class BookingController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-
-    public String createHotel(@RequestBody BookingRequest bookingRequest) {
+    public String createBooking(@RequestBody BookingRequest bookingRequest) {
         Booking booking = new Booking();
 
         booking.setDateBegin(bookingRequest.getDateBegin());
         booking.setDateEnd(bookingRequest.getDateEnd());
         booking.setPrice(bookingRequest.getPrice());
+
+        BookingStatus bookingStatus = (BookingStatus) bookingStatusRepository.findById(bookingRequest.getBookingStatusId())
+                .orElseThrow(BookingStatusNotFoundException::new);
+        booking.setBookingStatus(bookingStatus);
 
         // Sauvegardez l'utilisateur dans la base de données
         bookingRepository.save(booking);
@@ -84,6 +92,15 @@ public class BookingController {
         Booking booking = this.bookingRepository.findById(id).orElseThrow(BookingNotFoundException::new);
 
         BeanUtils.copyProperties(bookingRequest, booking);
+
+        if (bookingRequest.getBookingStatusId() != null) {
+            log.debug("Looking for BookingStatus with ID: {}", bookingRequest.getBookingStatusId());
+
+            BookingStatus bookingStatus = bookingStatusRepository.findById(bookingRequest.getBookingStatusId())
+                    .orElseThrow(BookingStatusNotFoundException::new);
+
+            booking.setBookingStatus(bookingStatus);
+        }
 
         this.bookingRepository.save(booking);
 

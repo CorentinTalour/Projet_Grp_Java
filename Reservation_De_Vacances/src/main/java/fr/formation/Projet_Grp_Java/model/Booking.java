@@ -1,14 +1,12 @@
 package fr.formation.Projet_Grp_Java.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.ManyToAny;
 import org.hibernate.annotations.UuidGenerator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -34,4 +32,7 @@ public class Booking {
 
     private float price;
 
+    @ManyToOne
+    @JoinColumn(name = "booking_bookingStatus_id", nullable = false)
+    private BookingStatus bookingStatus;
 }
