@@ -4,20 +4,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.UuidGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.hibernate.annotations.UuidGenerator;
-
 @Entity
-@Table(name = "book")
-@Getter
-@Setter
-public class Book {
-
+@Table(name = "companyType")
+@Getter @Setter
+public class CompanyType {
     @Id
-    @UuidGenerator
-    @Column(name = "id")
+    @Column(name = "companyType_id")
     private String id;
+
+    @Column(name = "companyType_name", length = 100, nullable = false)
+    private String companyTypeName;
 }

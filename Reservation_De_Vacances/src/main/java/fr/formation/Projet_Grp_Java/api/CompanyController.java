@@ -2,6 +2,10 @@ package fr.formation.Projet_Grp_Java.api;
 
 import java.util.List;
 
+import fr.formation.Projet_Grp_Java.exception.CompanyTypeNotFoundException;
+import fr.formation.Projet_Grp_Java.model.CompanyType;
+import fr.formation.Projet_Grp_Java.repo.CompanyTypeRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +35,29 @@ import lombok.extern.log4j.Log4j2;
 public class CompanyController {
 
     private final CompanyRepository companyRepository;
+    private final CompanyTypeRepository companyTypeRepository;
+
+    @PostConstruct
+    public void init() {
+        // Vérifiez si la table est vide
+        if (companyTypeRepository.count() == 0) {
+            CompanyType companyTypeHotel = new CompanyType();
+            companyTypeHotel.setId("1");
+            companyTypeHotel.setCompanyTypeName("Hôtel");
+            companyTypeRepository.save(companyTypeHotel);
+
+            CompanyType companyTypePlane = new CompanyType();
+            companyTypePlane.setId("2");
+            companyTypePlane.setCompanyTypeName("Avion");
+            companyTypeRepository.save(companyTypePlane);
+
+
+            CompanyType companyTypeCar = new CompanyType();
+            companyTypeCar.setId("3");
+            companyTypeCar.setCompanyTypeName("Voiture");
+            companyTypeRepository.save(companyTypeCar);
+        }
+    }
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
@@ -65,6 +92,11 @@ public class CompanyController {
         Company company = new Company();
 
         company.setNameAgency(companyRequest.getNameAgency());
+
+        CompanyType companyType = companyTypeRepository.findById(companyRequest.getCompanyTypeId())
+                .orElseThrow(CompanyTypeNotFoundException::new);
+        company.setCompanyType(companyType);
+
         // Sauvegardez l'utilisateur dans la base de données
         companyRepository.save(company);
         return "Company created successfully";
@@ -78,6 +110,15 @@ public class CompanyController {
         Company company = this.companyRepository.findById(id).orElseThrow(HotelNotFoundException::new);
 
         BeanUtils.copyProperties(companyRequest, company);
+
+        if (companyRequest.getCompanyTypeId() != null) {
+            log.debug("Looking for CompanyType with ID: {}", companyRequest.getCompanyTypeId());
+
+            CompanyType companyType = companyTypeRepository.findById(companyRequest.getCompanyTypeId())
+                    .orElseThrow(CompanyTypeNotFoundException::new);
+
+            company.setCompanyType(companyType);
+        }
 
         this.companyRepository.save(company);
 

@@ -27,7 +27,10 @@ public class UserRequest {
     private String mail;
 
     @NotBlank
-    private String telephone;
+    private String phone;
+
+    @NotNull
+    private boolean admin;
 
     private String companyId;
 }

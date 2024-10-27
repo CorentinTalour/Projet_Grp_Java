@@ -11,9 +11,9 @@ public class UserResponse {
 
     private String id;
     private String name;
-    private String surname;
+    private String username;
     private String mail;
-    private String telephone;
+    private String phone;
     private boolean has_driving_licence;
     private String companyId;
 }

@@ -1,9 +1,6 @@
 package fr.formation.Projet_Grp_Java.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
@@ -20,4 +17,8 @@ public class Company {
 
     @Column(name = "name", length = 50, nullable = false)
     private String nameAgency;
+
+    @ManyToOne
+    @JoinColumn(name = "company_companyType_id" , nullable = false)
+    private CompanyType companyType;
 }
