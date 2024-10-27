@@ -9,6 +9,7 @@ import fr.formation.Projet_Grp_Java.repo.CarStatusRepository;
 import fr.formation.Projet_Grp_Java.request.CreateOrUpdateCarRequest;
 import fr.formation.Projet_Grp_Java.response.CarByIdResponse;
 import fr.formation.Projet_Grp_Java.response.CarResponse;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +28,28 @@ import java.util.List;
 public class CarApiController {
     private final CarRepository repository;
     private final CarStatusRepository carStatusRepository;
+
+    @PostConstruct
+    public void init() {
+        // Vérifiez si la table est vide
+        if (carStatusRepository.count() == 0) {
+            CarStatus carStatusDispo = new CarStatus();
+            carStatusDispo.setId("1");
+            carStatusDispo.setCarStatusName("Disponible");
+            carStatusRepository.save(carStatusDispo);
+
+            CarStatus carStatusLouee = new CarStatus();
+            carStatusLouee.setId("2");
+            carStatusLouee.setCarStatusName("Louée");
+            carStatusRepository.save(carStatusLouee);
+
+
+            CarStatus carStatusMaintenance = new CarStatus();
+            carStatusMaintenance.setId("3");
+            carStatusMaintenance.setCarStatusName("Maintenance");
+            carStatusRepository.save(carStatusMaintenance);
+        }
+    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
