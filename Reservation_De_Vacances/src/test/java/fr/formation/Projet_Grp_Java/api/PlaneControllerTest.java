@@ -26,175 +26,167 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 public class PlaneControllerTest {
-    private static final String PLANE_ID1 = "plane-id-863";
-    private static final String PLANE_DEPARTUREAIRPORT1 = "Londres";
-    private static final String PLANE_ARRIVALAIRPORT1 = "Berlin";
-    private static final Double PLANE_PLANEPRICE1 = 500.50;
-    private static final Integer PLANE_NUMBEROFSEATS1 = 300;
+        private static final String PLANE_ID1 = "plane-id-863";
+        private static final String PLANE_DEPARTUREAIRPORT1 = "Londres";
+        private static final String PLANE_ARRIVALAIRPORT1 = "Berlin";
+        private static final Double PLANE_PLANEPRICE1 = 500.50;
+        private static final Integer PLANE_NUMBEROFSEATS1 = 300;
 
-    private static final String PLANE_ID2 = "plane-id-999";
-    private static final String PLANE_DEPARTUREAIRPORT2 = "Lisbonne";
-    private static final String PLANE_ARRIVALAIRPORT2 = "Moscou";
-    private static final Double PLANE_PLANEPRICE2 = 999.99;
-    private static final Integer PLANE_NUMBEROFSEATS2 = 450;
+        private static final String ENDPOINT = "/api/plane";
+        private static final String ENDPOINT_BY_ID = ENDPOINT + "/" + PLANE_ID1;
 
-    private static final String ENDPOINT = "/api/plane";
-    private static final String ENDPOINT_BY_ID = ENDPOINT + "/" + PLANE_ID1;
+        private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+        @Mock
+        private PlaneRepository repository;
 
-    @Mock
-    private PlaneRepository repository;
+        private MockMvc mockMvc;
 
-    private MockMvc mockMvc;
+        @InjectMocks
+        private PlaneApiController ctrl;
 
-    @InjectMocks
-    private PlaneApiController ctrl;
+        @BeforeEach
+        public void setup() {
+                this.mockMvc = MockMvcBuilders.standaloneSetup(this.ctrl).build();
+        }
 
-    @BeforeEach
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(this.ctrl).build();
-    }
+        @Test
+        public void testFindAll() throws Exception {
+                // when
+                ResultActions result = this.mockMvc.perform(MockMvcRequestBuilders.get(ENDPOINT));
 
-    @Test
-    public void testFindAll() throws Exception {
-        //when
-        ResultActions result = this.mockMvc.perform(MockMvcRequestBuilders.get(ENDPOINT));
+                // then
+                result.andExpect(status().isOk());
 
-        //then
-        result.andExpect(status().isOk());
+                verify(this.repository).findAll();
+        }
 
-        verify(this.repository).findAll();
-    }
+        @Test
+        public void testFindById_PlaneExists() throws Exception {
+                Plane plane = new Plane();
+                plane.setId(PLANE_ID1);
+                plane.setDepartureAirport(PLANE_DEPARTUREAIRPORT1);
+                plane.setArrivalAirport(PLANE_ARRIVALAIRPORT1);
+                plane.setPlanePrice(PLANE_PLANEPRICE1);
+                plane.setNumberOfSeats(PLANE_NUMBEROFSEATS1);
 
-    @Test
-    public void testFindById_PlaneExists() throws Exception {
-        Plane plane = new Plane();
-        plane.setId(PLANE_ID1);
-        plane.setDepartureAirport(PLANE_DEPARTUREAIRPORT1);
-        plane.setArrivalAirport(PLANE_ARRIVALAIRPORT1);
-        plane.setPlanePrice(PLANE_PLANEPRICE1);
-        plane.setNumberOfSeats(PLANE_NUMBEROFSEATS1);
+                when(repository.findById(PLANE_ID1)).thenReturn(Optional.of(plane));
 
-        when(repository.findById(PLANE_ID1)).thenReturn(Optional.of(plane));
+                // Exécution de la requête GET
+                ResultActions result = this.mockMvc.perform(MockMvcRequestBuilders.get(ENDPOINT + "/" + PLANE_ID1)
+                                .contentType(MediaType.APPLICATION_JSON));
 
-        // Exécution de la requête GET
-        ResultActions result = this.mockMvc.perform(MockMvcRequestBuilders.get(ENDPOINT + "/" + PLANE_ID1)
-                .contentType(MediaType.APPLICATION_JSON));
+                result.andExpect(status().isOk())
+                                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(content().json("{" +
+                                                "\"departureAirport\":\"" + PLANE_DEPARTUREAIRPORT1 + "\"," +
+                                                "\"arrivalAirport\":\"" + PLANE_ARRIVALAIRPORT1 + "\"," +
+                                                "\"planePrice\":" + PLANE_PLANEPRICE1 + "," +
+                                                "\"numberOfSeats\":" + PLANE_NUMBEROFSEATS1 +
+                                                "}"));
+        }
 
-        result.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json("{" +
-                        "\"departureAirport\":\"" + PLANE_DEPARTUREAIRPORT1 + "\"," +
-                        "\"arrivalAirport\":\"" + PLANE_ARRIVALAIRPORT1 + "\"," +
-                        "\"planePrice\":" + PLANE_PLANEPRICE1 + "," +
-                        "\"numberOfSeats\":" + PLANE_NUMBEROFSEATS1 +
-                        "}"));
-    }
+        @Test
+        public void testFindById_PlaneNotFound() throws Exception {
+                when(repository.findById(PLANE_ID1)).thenReturn(Optional.empty());
 
-    @Test
-    public void testFindById_PlaneNotFound() throws Exception {
-        when(repository.findById(PLANE_ID1)).thenReturn(Optional.empty());
+                ResultActions result = this.mockMvc.perform(MockMvcRequestBuilders.get(ENDPOINT + "/" + PLANE_ID1)
+                                .contentType(MediaType.APPLICATION_JSON));
 
-        ResultActions result = this.mockMvc.perform(MockMvcRequestBuilders.get(ENDPOINT + "/" + PLANE_ID1)
-                .contentType(MediaType.APPLICATION_JSON));
+                result.andExpect(status().isNotFound());
+        }
 
-        result.andExpect(status().isNotFound());
-    }
+        @Test
+        void shouldCreatePlaneWithStatusCreated() throws Exception {
+                // Given
+                CreateOrUpdatePlaneRequest request = CreateOrUpdatePlaneRequest.builder()
+                                .departureAirport(PLANE_DEPARTUREAIRPORT1)
+                                .arrivalAirport(PLANE_ARRIVALAIRPORT1)
+                                .planePrice(550.50)
+                                .numberOfSeats(200)
+                                .build();
 
-    @Test
-    void shouldCreatePlaneWithStatusCreated() throws Exception {
-        // Given
-        CreateOrUpdatePlaneRequest request = CreateOrUpdatePlaneRequest.builder()
-                .departureAirport(PLANE_DEPARTUREAIRPORT1)
-                .arrivalAirport(PLANE_ARRIVALAIRPORT1)
-                .planePrice(550.50)
-                .numberOfSeats(200)
-                .build();
+                when(repository.save(any(Plane.class))).thenAnswer(invocation -> {
+                        Plane savedPlane = invocation.getArgument(0);
+                        savedPlane.setId(PLANE_ID1);
+                        return savedPlane;
+                });
 
-        when(repository.save(any(Plane.class))).thenAnswer(invocation -> {
-            Plane savedPlane = invocation.getArgument(0);
-            savedPlane.setId(PLANE_ID1);
-            return savedPlane;
-        });
+                // When
+                mockMvc.perform(
+                                MockMvcRequestBuilders.post(ENDPOINT)
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(request)))
+                                // Then
+                                .andExpect(status().isCreated())
+                                .andExpect(content().string(PLANE_ID1));
 
-        // When
-        mockMvc.perform(
-                        MockMvcRequestBuilders.post(ENDPOINT)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
-                )
+                verify(repository).save(any(Plane.class));
+        }
+
+        @Test
+        void shouldUpdateStatusOk() throws Exception {
+                // Given
+                Plane existingPlane = new Plane();
+                existingPlane.setId(PLANE_ID1);
+                existingPlane.setArrivalAirport("TestDépart");
+                existingPlane.setDepartureAirport("TestArrivé");
+                existingPlane.setPlanePrice(550.00);
+                existingPlane.setNumberOfSeats(200);
+
+                Mockito.when(repository.findById(PLANE_ID1)).thenReturn(Optional.of(existingPlane));
+
+                CreateOrUpdatePlaneRequest request = CreateOrUpdatePlaneRequest.builder()
+                                .departureAirport("UpdatedDeparture")
+                                .arrivalAirport("UpdatedArrival")
+                                .planePrice(999.99)
+                                .numberOfSeats(300)
+                                .build();
+
+                // When
+                ResultActions result = mockMvc.perform(
+                                MockMvcRequestBuilders
+                                                .put(ENDPOINT_BY_ID)
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(request)));
+
                 // Then
-                .andExpect(status().isCreated())
-                .andExpect(content().string(PLANE_ID1));
+                result.andExpect(status().isOk())
+                                .andExpect(content().string(PLANE_ID1));
 
-        verify(repository).save(any(Plane.class));
-    }
+                Mockito.verify(repository).findById(PLANE_ID1);
+                Mockito.verify(repository).save(any(Plane.class));
+        }
 
-    @Test
-    void shouldUpdateStatusOk() throws Exception {
-        // Given
-        Plane existingPlane = new Plane();
-        existingPlane.setId(PLANE_ID1);
-        existingPlane.setArrivalAirport("TestDépart");
-        existingPlane.setDepartureAirport("TestArrivé");
-        existingPlane.setPlanePrice(550.00);
-        existingPlane.setNumberOfSeats(200);
+        @Test
+        void shouldDeleteByIdStatusOk() throws Exception {
+                // Given
+                doNothing().when(repository).deleteById(PLANE_ID1);
 
-        Mockito.when(repository.findById(PLANE_ID1)).thenReturn(Optional.of(existingPlane));
+                // When
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+                                .delete(ENDPOINT_BY_ID)
+                                .contentType(MediaType.APPLICATION_JSON));
 
-        CreateOrUpdatePlaneRequest request = CreateOrUpdatePlaneRequest.builder()
-                .departureAirport("UpdatedDeparture")
-                .arrivalAirport("UpdatedArrival")
-                .planePrice(999.99)
-                .numberOfSeats(300)
-                .build();
+                // Then
+                result.andExpect(status().isOk());
 
-        // When
-        ResultActions result = mockMvc.perform(
-                MockMvcRequestBuilders
-                        .put(ENDPOINT_BY_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-        );
+                verify(repository).deleteById(PLANE_ID1);
+        }
 
-        // Then
-        result.andExpect(status().isOk())
-                .andExpect(content().string(PLANE_ID1));
+        @Test
+        void shouldHandleExceptionDuringDelete() throws Exception {
+                // Given
+                doThrow(new RuntimeException("Database error")).when(repository).deleteById(PLANE_ID1);
 
-        Mockito.verify(repository).findById(PLANE_ID1);
-        Mockito.verify(repository).save(any(Plane.class));
-    }
+                // When
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+                                .delete(ENDPOINT_BY_ID)
+                                .contentType(MediaType.APPLICATION_JSON));
 
-    @Test
-    void shouldDeleteByIdStatusOk() throws Exception {
-        // Given
-        doNothing().when(repository).deleteById(PLANE_ID1);
+                // Then
+                result.andExpect(status().isOk());
 
-        // When
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
-                .delete(ENDPOINT_BY_ID)
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // Then
-        result.andExpect(status().isOk());
-
-        verify(repository).deleteById(PLANE_ID1);
-    }
-
-    @Test
-    void shouldHandleExceptionDuringDelete() throws Exception {
-        // Given
-        doThrow(new RuntimeException("Database error")).when(repository).deleteById(PLANE_ID1);
-
-        // When
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
-                .delete(ENDPOINT_BY_ID)
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // Then
-        result.andExpect(status().isOk());
-
-        verify(repository).deleteById(PLANE_ID1);
-    }
+                verify(repository).deleteById(PLANE_ID1);
+        }
 }
