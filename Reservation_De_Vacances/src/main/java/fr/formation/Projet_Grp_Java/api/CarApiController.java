@@ -2,10 +2,13 @@ package fr.formation.Projet_Grp_Java.api;
 
 import fr.formation.Projet_Grp_Java.exception.CarNotFoundException;
 import fr.formation.Projet_Grp_Java.exception.CarStatusNotFoundException;
+import fr.formation.Projet_Grp_Java.exception.CompanyNotFoundException;
 import fr.formation.Projet_Grp_Java.model.Car;
 import fr.formation.Projet_Grp_Java.model.CarStatus;
+import fr.formation.Projet_Grp_Java.model.Company;
 import fr.formation.Projet_Grp_Java.repo.CarRepository;
 import fr.formation.Projet_Grp_Java.repo.CarStatusRepository;
+import fr.formation.Projet_Grp_Java.repo.CompanyRepository;
 import fr.formation.Projet_Grp_Java.request.CreateOrUpdateCarRequest;
 import fr.formation.Projet_Grp_Java.response.CarByIdResponse;
 import fr.formation.Projet_Grp_Java.response.CarResponse;
@@ -28,6 +31,7 @@ import java.util.List;
 public class CarApiController {
     private final CarRepository repository;
     private final CarStatusRepository carStatusRepository;
+    private final CompanyRepository companyRepository;
 
     @PostConstruct
     public void init() {
@@ -88,6 +92,10 @@ public class CarApiController {
                 .orElseThrow(CarStatusNotFoundException::new);
         car.setCarStatus(carStatus);
 
+        Company companyId = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(CompanyNotFoundException::new);
+        car.setCompany(companyId);
+
         this.repository.save(car);
 
         log.debug("Car {} created!", car.getId());
@@ -110,10 +118,16 @@ public class CarApiController {
 
             CarStatus carStatus = carStatusRepository.findById(request.getCarStatusId())
                     .orElseThrow(CarStatusNotFoundException::new);
-
             car.setCarStatus(carStatus);
         }
 
+        if (request.getCompanyId() != null) {
+            log.debug("Looking for Company with ID: {}", request.getCompanyId());
+
+            Company company = companyRepository.findById(request.getCompanyId())
+                    .orElseThrow(CompanyNotFoundException::new);
+            car.setCompany(company);
+        }
         this.repository.save(car);
 
         log.debug("Car {} updated!", id);

@@ -299,12 +299,12 @@ public class CarControllerTest {
 
     private static Stream<Arguments> provideBadCreateOrUpdateRequests() {
         return Stream.of(
-                Arguments.of(new CreateOrUpdateCarRequest(null, null, null, null)),
-                Arguments.of(new CreateOrUpdateCarRequest("", "", null, "")),
-                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", null, "StatusId")),
-                Arguments.of(new CreateOrUpdateCarRequest("Brand", "", 100.0, "StatusId")),
-                Arguments.of(new CreateOrUpdateCarRequest("", "Model", 100.0, "StatusId")),
-                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", 100.0, null))
+                Arguments.of(new CreateOrUpdateCarRequest(null, null, null, null, null)),
+                Arguments.of(new CreateOrUpdateCarRequest("", "", null, "", null)),
+                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", null, "StatusId", null)),
+                Arguments.of(new CreateOrUpdateCarRequest("Brand", "", 100.0, "StatusId", null)),
+                Arguments.of(new CreateOrUpdateCarRequest("", "Model", 100.0, "StatusId", null)),
+                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", 100.0, null, null))
         );
     }
 
