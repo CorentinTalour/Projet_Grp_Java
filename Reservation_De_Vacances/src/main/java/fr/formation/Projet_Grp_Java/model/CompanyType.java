@@ -9,7 +9,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "companyType")
-@Getter @Setter
+@Getter
+@Setter
 public class CompanyType {
     @Id
     @Column(name = "companyType_id")

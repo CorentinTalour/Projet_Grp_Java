@@ -1,11 +1,12 @@
 package fr.formation.Projet_Grp_Java.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.formation.Projet_Grp_Java.exception.CompanyNotFoundException;
+
 import fr.formation.Projet_Grp_Java.model.Company;
+import fr.formation.Projet_Grp_Java.model.CompanyType;
 import fr.formation.Projet_Grp_Java.repo.CompanyRepository;
+import fr.formation.Projet_Grp_Java.repo.CompanyTypeRepository;
 import fr.formation.Projet_Grp_Java.request.CompanyRequest;
-import fr.formation.Projet_Grp_Java.response.CompanyResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,9 @@ public class CompanyControllerTest {
 
     @Mock
     private CompanyRepository companyRepository;
+
+    @Mock
+    private CompanyTypeRepository companyTypeRepository;
 
     @InjectMocks
     private CompanyController companyController;
@@ -91,7 +95,13 @@ public class CompanyControllerTest {
         // given
         CompanyRequest request = new CompanyRequest();
         request.setNameAgency("New Agency");
+        request.setCompanyTypeId("2");
         String content = mapper.writeValueAsString(request);
+
+        CompanyType mockCompanyType = new CompanyType();
+        mockCompanyType.setId("2");
+        mockCompanyType.setCompanyTypeName("Type Test");
+        Mockito.when(companyTypeRepository.findById("2")).thenReturn(Optional.of(mockCompanyType));
 
         ArgumentCaptor<Company> captor = ArgumentCaptor.forClass(Company.class);
 

@@ -51,7 +51,6 @@ public class CompanyController {
             companyTypePlane.setCompanyTypeName("Avion");
             companyTypeRepository.save(companyTypePlane);
 
-
             CompanyType companyTypeCar = new CompanyType();
             companyTypeCar.setId("3");
             companyTypeCar.setCompanyTypeName("Voiture");
@@ -84,10 +83,10 @@ public class CompanyController {
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
+    // @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
 
-    public String createHotel(@RequestBody CompanyRequest companyRequest) {
+    public String createCompany(@RequestBody CompanyRequest companyRequest) {
 
         Company company = new Company();
 

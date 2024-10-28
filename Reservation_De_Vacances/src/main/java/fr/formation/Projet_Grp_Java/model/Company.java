@@ -19,6 +19,6 @@ public class Company {
     private String nameAgency;
 
     @ManyToOne
-    @JoinColumn(name = "company_companyType_id" , nullable = false)
+    @JoinColumn(name = "company_companyType_id", nullable = false)
     private CompanyType companyType;
 }
