@@ -21,6 +21,12 @@ public class BookingResponse {
 
     private float price;
 
+    private String user_id;
 
+    private String hotel_id;
+
+    private String plane_id;
+
+    private String car_id;
 }
 

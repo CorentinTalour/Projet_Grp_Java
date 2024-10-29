@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.AssertTrue;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,6 +42,20 @@ public class Booking {
     private Utilisateur user;
 
     @ManyToOne
-    @JoinColumn(name = "hotel_id", nullable = false)
+    @JoinColumn(name = "hotel_id", nullable = true)
     private Hotel hotel;
+
+    @ManyToOne
+    @JoinColumn(name = "plane_id", nullable = true)
+    private Plane plane;
+
+    @ManyToOne
+    @JoinColumn(name = "car_id", nullable = true)
+    private Car car;
+
+    // Méthode de validation pour vérifier qu'au moins une relation est présente
+    @AssertTrue(message = "At least one of hotel, plane, or car must be provided.")
+    private boolean isAtLeastOneRelationPresent() {
+        return hotel != null || plane != null || car != null;
+    }
 }
