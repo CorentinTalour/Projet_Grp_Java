@@ -106,6 +106,7 @@ public class UserController {
         user.setMail(userRequest.getMail());
         user.setPhone(userRequest.getPhone());
         user.setHasDrivingLicence(userRequest.isHasDrivingLicence());
+        user.setAdmin(userRequest.isAdmin());
         user.setCompany(company);
 
         utilisateurRepository.save(user);
