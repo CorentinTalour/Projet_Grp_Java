@@ -1,7 +1,6 @@
 package fr.formation.Projet_Grp_Java.api;
 
 import fr.formation.Projet_Grp_Java.exception.UserNotFoundException;
-import fr.formation.Projet_Grp_Java.model.Company;
 import fr.formation.Projet_Grp_Java.model.Utilisateur;
 import fr.formation.Projet_Grp_Java.request.AuthRequest;
 import fr.formation.Projet_Grp_Java.request.UserRequest;
@@ -14,19 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +42,6 @@ class UserControllerTest {
         private CompanyRepository companyRepository;
 
         private Utilisateur utilisateur;
-        private UserResponse userResponse;
 
         @BeforeEach
         void setUp() {
@@ -82,19 +75,6 @@ class UserControllerTest {
                 assertNotNull(response.getToken());
                 verify(utilisateurRepository).findByUsername("testuser");
         }
-
-        // @Test
-        // void shouldReturnAllUsers() {
-        // // given
-        // when(utilisateurRepository.findAll()).thenReturn(Collections.singletonList(utilisateur));
-
-        // // when
-        // List<UserResponse> users = userController.findAll();
-
-        // // then
-        // assertEquals(1, users.size());
-        // assertEquals("testuser", users.get(0).getUsername());
-        // }
 
         @Test
         void shouldFindUserById() {
