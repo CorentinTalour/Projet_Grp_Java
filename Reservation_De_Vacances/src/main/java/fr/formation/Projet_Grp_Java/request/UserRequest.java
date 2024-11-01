@@ -17,7 +17,7 @@ public class UserRequest {
     @NotBlank
     private String username;
 
-    @NotBlank
+    @NotBlank @NotNull
     private String password;
 
     @NotNull
