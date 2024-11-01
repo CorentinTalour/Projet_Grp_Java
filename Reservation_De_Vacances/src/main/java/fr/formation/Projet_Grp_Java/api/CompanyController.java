@@ -83,7 +83,7 @@ public class CompanyController {
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
+    // @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
 
     public String createCompany(@RequestBody CompanyRequest companyRequest) {

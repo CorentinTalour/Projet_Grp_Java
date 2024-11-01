@@ -108,6 +108,7 @@ public class UserController {
         user.setHasDrivingLicence(userRequest.isHasDrivingLicence());
         user.setAdmin(userRequest.isAdmin());
         user.setCompany(company);
+        user.setAdmin(userRequest.isAdmin());
 
         utilisateurRepository.save(user);
         return "User created successfully";
