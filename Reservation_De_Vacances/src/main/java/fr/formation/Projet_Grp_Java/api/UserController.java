@@ -107,6 +107,7 @@ public class UserController {
         user.setPhone(userRequest.getPhone());
         user.setHasDrivingLicence(userRequest.isHasDrivingLicence());
         user.setCompany(company);
+        user.setAdmin(userRequest.isAdmin());
 
         utilisateurRepository.save(user);
         return "User created successfully";
