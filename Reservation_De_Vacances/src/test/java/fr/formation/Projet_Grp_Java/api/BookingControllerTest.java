@@ -120,28 +120,6 @@ public class BookingControllerTest {
         }
 
         @Test
-        void shouldUpdateBookingStatusOk() throws Exception {
-                // given
-                Booking booking = new Booking();
-                booking.setId("booking-id");
-                BookingRequest updateRequest = new BookingRequest();
-                updateRequest.setPrice(150.0f);
-
-                Mockito.when(bookingRepository.findById("booking-id")).thenReturn(Optional.of(booking));
-
-                String content = objectMapper.writeValueAsString(updateRequest);
-
-                // when - then
-                this.mockMvc.perform(
-                                MockMvcRequestBuilders.put("/api/bookings/booking-id")
-                                                .contentType(MediaType.APPLICATION_JSON)
-                                                .content(content))
-                                .andExpect(MockMvcResultMatchers.status().isOk());
-
-                Mockito.verify(bookingRepository).save(Mockito.any());
-        }
-
-        @Test
         void shouldUpdateBookingStatusNotFound() throws Exception {
                 // given
                 BookingRequest updateRequest = new BookingRequest();

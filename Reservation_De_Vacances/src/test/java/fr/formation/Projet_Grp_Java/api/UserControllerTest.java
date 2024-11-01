@@ -167,8 +167,6 @@ class UserControllerTest {
 
         @Test
         void shouldDeleteUser() {
-                // given
-                when(utilisateurRepository.findById("1")).thenReturn(Optional.of(utilisateur));
 
                 // when
                 userController.deleteById("1");

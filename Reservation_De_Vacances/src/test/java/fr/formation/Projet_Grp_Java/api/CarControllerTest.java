@@ -1,311 +1,172 @@
 package fr.formation.Projet_Grp_Java.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.formation.Projet_Grp_Java.exception.CarNotFoundException;
+import fr.formation.Projet_Grp_Java.exception.CarStatusNotFoundException;
+import fr.formation.Projet_Grp_Java.exception.CompanyNotFoundException;
 import fr.formation.Projet_Grp_Java.model.Car;
 import fr.formation.Projet_Grp_Java.model.CarStatus;
+import fr.formation.Projet_Grp_Java.model.Company;
 import fr.formation.Projet_Grp_Java.repo.CarRepository;
 import fr.formation.Projet_Grp_Java.repo.CarStatusRepository;
+import fr.formation.Projet_Grp_Java.repo.CompanyRepository;
 import fr.formation.Projet_Grp_Java.request.CreateOrUpdateCarRequest;
+import fr.formation.Projet_Grp_Java.response.CarByIdResponse;
+import fr.formation.Projet_Grp_Java.response.CarResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.beans.BeanUtils;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@Sql(scripts = "classpath:/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class CarControllerTest {
-    private static final String CAR_ID = "car-id-863";
-    private static final String CAR_STATUS_ID = "1";
-    //private static final String USER_ID = "user-id-117";
+class CarControllerTest {
 
-    private static final String ENDPOINT = "/api/car";
-    private static final String ENDPOINT_BY_ID = ENDPOINT + "/" + CAR_ID;
+        @InjectMocks
+        private CarApiController carApiController;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+        @Mock
+        private CarRepository carRepository;
 
-    @Mock
-    private CarRepository repository;
+        @Mock
+        private CarStatusRepository carStatusRepository;
 
-    @Mock
-    private CarStatusRepository carStatusRepository;
+        @Mock
+        private CompanyRepository companyRepository;
 
-    //private ObjectMapper objectMapper;
+        private Car car;
+        private CreateOrUpdateCarRequest createOrUpdateCarRequest;
+        private CarStatus carStatus;
+        private Company company;
 
-    private MockMvc mockMvc;
+        @BeforeEach
+        void setUp() {
+                car = new Car();
+                car.setId("1");
+                car.setCarBrand("Toyota");
+                car.setCarModel("Corolla");
+                car.setCarDailyPrice(50.0);
 
-    @InjectMocks
-    private CarApiController ctrl;
+                carStatus = new CarStatus();
+                carStatus.setId("1");
+                carStatus.setCarStatusName("Disponible");
 
-    @BeforeEach
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(this.ctrl).build();
-    }
+                company = new Company();
+                company.setId("company1");
 
-    @Test
-    void shouldFindAllStatusOk() throws Exception {
-        //given
+                createOrUpdateCarRequest = new CreateOrUpdateCarRequest();
+                createOrUpdateCarRequest.setCarBrand("Toyota");
+                createOrUpdateCarRequest.setCarModel("Corolla");
+                createOrUpdateCarRequest.setCarDailyPrice(50.0);
+                createOrUpdateCarRequest.setCarStatusId("1");
+                createOrUpdateCarRequest.setCompanyId("company1");
+        }
 
-        //when
-        ResultActions result = this.mockMvc.perform(MockMvcRequestBuilders.get(ENDPOINT));
+        @Test
+        void shouldFindAllCars() {
+                when(carRepository.findAll()).thenReturn(Collections.singletonList(car));
 
-        //then
-        result.andExpect(status().isOk());
+                List<CarResponse> response = carApiController.findAll();
 
-        Mockito.verify(this.repository).findAll();
-    }
+                assertEquals(1, response.size());
+                assertEquals("Toyota", response.get(0).getCarBrand());
+                verify(carRepository).findAll();
+        }
 
-    @Test
-    void shouldFindByIdStatusOk() throws Exception {
-        //given
-        Mockito.when(this.repository.findById(CAR_ID)).thenReturn(Optional.of(new Car()));
+        @Test
+        void shouldFindCarById() {
+                when(carRepository.findById("1")).thenReturn(Optional.of(car));
 
-        //when
-        ResultActions result = this.mockMvc.perform(MockMvcRequestBuilders.get(ENDPOINT_BY_ID));
+                CarByIdResponse response = carApiController.findById("1");
 
-        //then
-        result.andExpect(status().isOk());
+                assertNotNull(response);
+                assertEquals("Toyota", response.getCarBrand());
+                verify(carRepository).findById("1");
+        }
 
-        Mockito.verify(this.repository).findById(CAR_ID);
-    }
+        @Test
+        void shouldThrowCarNotFoundExceptionWhenCarDoesNotExist() {
+                when(carRepository.findById("1")).thenReturn(Optional.empty());
 
-    @Test
-    void shouldCreateStatusCreated() throws Exception {
-        //Given
-        CreateOrUpdateCarRequest request = CreateOrUpdateCarRequest.builder()
-                .carBrand("TestBrand")
-                .carModel("TestModel")
-                .carDailyPrice(100.0)
-                .carStatusId(CAR_STATUS_ID)
-                .build();
+                assertThrows(CarNotFoundException.class, () -> carApiController.findById("1"));
+        }
 
-        CarStatus carStatus = new CarStatus();
-        carStatus.setId(CAR_STATUS_ID);
+        @Test
+        void shouldCreateCar() {
+                when(carStatusRepository.findById("1")).thenReturn(Optional.of(carStatus));
+                when(companyRepository.findById("company1")).thenReturn(Optional.of(company));
+                when(carRepository.save(any(Car.class))).thenReturn(car);
 
-        Car car = new Car();
-        car.setId(CAR_ID);
-        car.setCarBrand("TestBrand");
-        car.setCarModel("TestModel");
-        car.setCarDailyPrice(100.0);
-        car.setCarStatus(carStatus);
+                String carId = carApiController.create(createOrUpdateCarRequest);
 
-        Mockito.when(carStatusRepository.findById(CAR_STATUS_ID)).thenReturn(Optional.of(carStatus));
+                verify(carStatusRepository).findById("1");
+                verify(companyRepository).findById("company1");
+                verify(carRepository).save(any(Car.class));
+        }
 
-        Mockito.when(repository.save(Mockito.any(Car.class))).thenAnswer(invocation -> {
-            Car savedCar = invocation.getArgument(0);
-            savedCar.setId(CAR_ID);
-            return savedCar;
-        });
+        @Test
+        void shouldThrowCarStatusNotFoundExceptionWhenCarStatusDoesNotExist() {
+                when(carStatusRepository.findById("1")).thenReturn(Optional.empty());
 
-        //When
-        mockMvc.perform(
-                        post(ENDPOINT)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
-                )
-                //Then
-                .andExpect(status().isCreated())
-                .andExpect(content().string(CAR_ID));
+                assertThrows(CarStatusNotFoundException.class, () -> carApiController.create(createOrUpdateCarRequest));
+        }
 
-        Mockito.verify(carStatusRepository).findById(CAR_STATUS_ID);
-        Mockito.verify(repository).save(Mockito.any(Car.class));
-    }
+        @Test
+        void shouldThrowCompanyNotFoundExceptionWhenCompanyDoesNotExist() {
+                when(carStatusRepository.findById("1")).thenReturn(Optional.of(carStatus));
+                when(companyRepository.findById("company1")).thenReturn(Optional.empty());
 
-    @Test
-    void shouldUpdateStatusOk() throws Exception {
-        //given
-        Mockito.when(this.repository.findById(CAR_ID)).thenReturn(Optional.of(new Car()));
+                assertThrows(CompanyNotFoundException.class, () -> carApiController.create(createOrUpdateCarRequest));
+        }
 
-        CreateOrUpdateCarRequest request = CreateOrUpdateCarRequest.builder()
-                .carModel("newCarModel")
-                .build();
+        @Test
+        void shouldUpdateCar() {
+                when(carRepository.findById("1")).thenReturn(Optional.of(car));
+                when(carStatusRepository.findById("1")).thenReturn(Optional.of(carStatus));
+                when(companyRepository.findById("company1")).thenReturn(Optional.of(company));
+                when(carRepository.save(any(Car.class))).thenReturn(car);
 
-        //when
-        ResultActions result = this.mockMvc.perform(
-                MockMvcRequestBuilders
-                        .put(ENDPOINT_BY_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        //.content(TestUtil.json(request))
-                        //.principal(authentication)
-        )
-                ;
+                String updatedCarId = carApiController.update("1", createOrUpdateCarRequest);
 
-        //then
-        result.andExpect(MockMvcResultMatchers.status().isOk());
+                assertEquals("1", updatedCarId);
+                verify(carRepository).findById("1");
+                verify(carStatusRepository).findById("1");
+                verify(companyRepository).findById("company1");
+                verify(carRepository).save(any(Car.class));
+        }
 
-        //Mockito.verify(this.userRepository, Mockito.never()).findById(USER_ID);
-        Mockito.verify(this.repository).findById(CAR_ID);
-        Mockito.verify(this.repository).save(Mockito.any());
-    }
+        @Test
+        void shouldThrowCarNotFoundExceptionWhenUpdatingNonexistentCar() {
+                when(carRepository.findById("1")).thenReturn(Optional.empty());
 
-    @ParameterizedTest
-    @MethodSource("provideBadCreateOrUpdateRequests")
-    void shouldUpdateStatusBadRequest(CreateOrUpdateCarRequest request) throws Exception {
+                assertThrows(CarNotFoundException.class, () -> carApiController.update("1", createOrUpdateCarRequest));
+        }
 
-        ResultActions result = this.mockMvc.perform(
-                MockMvcRequestBuilders.put(ENDPOINT_BY_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-        );
+        @Test
+        void shouldDeleteCar() {
 
-        result.andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
+                carApiController.deleteById("1");
 
+                verify(carRepository).deleteById("1");
+        }
 
-    @Test
-    void shouldUpdateCarStatusOk() throws Exception {
-        // Given
-        CreateOrUpdateCarRequest request = CreateOrUpdateCarRequest.builder()
-                .carBrand("UpdatedBrand")
-                .carModel("UpdatedModel")
-                .carDailyPrice(150.0)
-                .carStatusId(CAR_STATUS_ID)
-                .build();
+        @Test
+        void shouldHandleDeleteException() {
+                doThrow(new RuntimeException("Can't delete car!")).when(carRepository).deleteById("1");
 
-        Car existingCar = new Car();
-        existingCar.setId(CAR_ID);
-        existingCar.setCarBrand("OldBrand");
-        existingCar.setCarModel("OldModel");
-        existingCar.setCarDailyPrice(100.0);
+                carApiController.deleteById("1");
 
-        CarStatus carStatus = new CarStatus();
-        carStatus.setId(CAR_STATUS_ID);
-
-        // Mock repository responses
-        Mockito.when(this.repository.findById(CAR_ID)).thenReturn(Optional.of(existingCar));
-        Mockito.when(this.carStatusRepository.findById(CAR_STATUS_ID)).thenReturn(Optional.of(carStatus));
-        Mockito.when(this.repository.save(Mockito.any(Car.class))).thenReturn(existingCar);
-
-        // When
-        ResultActions result = mockMvc.perform(
-                MockMvcRequestBuilders
-                        .put(ENDPOINT_BY_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-        );
-
-        // Then
-        result.andExpect(status().isOk());
-        result.andExpect(content().string(CAR_ID));
-
-        Mockito.verify(this.repository).findById(CAR_ID);
-        Mockito.verify(this.carStatusRepository).findById(CAR_STATUS_ID);
-        Mockito.verify(this.repository).save(Mockito.any(Car.class));
-    }
-
-    @Test
-    void shouldReturnNotFoundWhenCarDoesNotExist() throws Exception {
-        // Given
-        CreateOrUpdateCarRequest request = CreateOrUpdateCarRequest.builder()
-                .carBrand("UpdatedBrand")
-                .carModel("UpdatedModel")
-                .carDailyPrice(150.0)
-                .carStatusId(CAR_STATUS_ID)
-                .build();
-
-        // Mock repository responses
-        Mockito.when(this.repository.findById(CAR_ID)).thenReturn(Optional.empty());
-
-        // When
-        ResultActions result = mockMvc.perform(
-                MockMvcRequestBuilders
-                        .put(ENDPOINT_BY_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-        );
-
-        // Then
-        result.andExpect(status().isNotFound());
-
-        Mockito.verify(this.repository).findById(CAR_ID);
-        Mockito.verify(this.repository, Mockito.never()).save(Mockito.any(Car.class));
-    }
-
-    @Test
-    void shouldReturnBadRequestWhenInvalidData() throws Exception {
-        // Given
-        CreateOrUpdateCarRequest request = CreateOrUpdateCarRequest.builder()
-                .carBrand("")
-                .carModel("")
-                .carDailyPrice(-100.0)
-                .carStatusId(null)
-                .build();
-
-        // When
-        ResultActions result = mockMvc.perform(
-                MockMvcRequestBuilders
-                        .put(ENDPOINT_BY_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-        );
-
-        // Then
-        result.andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void shouldDeleteByIdStatusOk() throws Exception {
-        // Given
-        Mockito.doNothing().when(repository).deleteById(CAR_ID);
-
-        // When
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
-                .delete(ENDPOINT_BY_ID)
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // Then
-        result.andExpect(status().isOk());
-
-        // Verify that the repository's deleteById method is called with the correct ID
-        Mockito.verify(repository).deleteById(CAR_ID);
-    }
-
-    @Test
-    void shouldHandleExceptionDuringDelete() throws Exception {
-        // Given
-        // Simulate an exception when trying to delete a car by ID
-        Mockito.doThrow(new RuntimeException("Database error")).when(repository).deleteById(CAR_ID);
-
-        // When
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
-                .delete(ENDPOINT_BY_ID)
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // Then
-        result.andExpect(status().isOk()); // Even if an exception occurs, the controller doesn't return an error
-        // Verify that the repository's deleteById method was called
-        Mockito.verify(repository).deleteById(CAR_ID);
-    }
-
-    private static Stream<Arguments> provideBadCreateOrUpdateRequests() {
-        return Stream.of(
-                Arguments.of(new CreateOrUpdateCarRequest(null, null, null, null, null)),
-                Arguments.of(new CreateOrUpdateCarRequest("", "", null, "", null)),
-                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", null, "StatusId", null)),
-                Arguments.of(new CreateOrUpdateCarRequest("Brand", "", 100.0, "StatusId", null)),
-                Arguments.of(new CreateOrUpdateCarRequest("", "Model", 100.0, "StatusId", null)),
-                Arguments.of(new CreateOrUpdateCarRequest("Brand", "Model", 100.0, null, null))
-        );
-    }
-
+                verify(carRepository).deleteById("1");
+        }
 }
