@@ -92,13 +92,24 @@ public class UserController {
         return resp;
     }
 
+    @GetMapping("/isAdmin")
+    public boolean isAdmin() {
+        var request = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        return request;
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public String createUser(@Valid @RequestBody UserRequest userRequest) {
 
-        Company company = companyRepository.findById(userRequest.getCompanyId())
-                .orElseThrow(() -> new RuntimeException("Company not found"));
         Utilisateur user = new Utilisateur();
+
+        if (userRequest.getCompanyId() != null) {
+            Company company = companyRepository.findById(userRequest.getCompanyId())
+                    .orElseThrow(() -> new RuntimeException("Company not found"));
+            user.setCompany(company);
+        }
 
         user.setName(userRequest.getName());
         user.setUsername(userRequest.getUsername());
@@ -106,8 +117,6 @@ public class UserController {
         user.setMail(userRequest.getMail());
         user.setPhone(userRequest.getPhone());
         user.setHasDrivingLicence(userRequest.isHasDrivingLicence());
-        user.setAdmin(userRequest.isAdmin());
-        user.setCompany(company);
         user.setAdmin(userRequest.isAdmin());
 
         utilisateurRepository.save(user);
@@ -117,12 +126,15 @@ public class UserController {
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public String update(@PathVariable String id, @RequestBody UserRequest request) {
-        log.debug("Updating video {} ...", id);
+        log.debug("Updating User {} ...", id);
 
         Utilisateur user = this.utilisateurRepository.findById(id).orElseThrow(UserNotFoundException::new);
 
-        Company company = companyRepository.findById(request.getCompanyId())
-                .orElseThrow(() -> new RuntimeException("Company not found"));
+        if (request.getCompanyId() != null) {
+            Company company = companyRepository.findById(request.getCompanyId())
+                    .orElseThrow(() -> new RuntimeException("Company not found"));
+            user.setCompany(company);
+        }
 
         user.setName(request.getName());
         user.setUsername(request.getUsername());
@@ -131,7 +143,6 @@ public class UserController {
         user.setPhone(request.getPhone());
         user.setHasDrivingLicence(request.isHasDrivingLicence());
         user.setAdmin(request.isAdmin());
-        user.setCompany(company);
 
         this.utilisateurRepository.save(user);
 
