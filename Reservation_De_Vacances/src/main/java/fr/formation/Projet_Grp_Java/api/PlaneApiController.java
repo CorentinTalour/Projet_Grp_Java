@@ -9,6 +9,11 @@ import fr.formation.Projet_Grp_Java.repo.PlaneRepository;
 import fr.formation.Projet_Grp_Java.request.CreateOrUpdatePlaneRequest;
 import fr.formation.Projet_Grp_Java.response.PlaneByIdResponse;
 import fr.formation.Projet_Grp_Java.response.PlaneResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -31,6 +36,14 @@ public class PlaneApiController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Récupérer tous les avions",
+            description = "Retourne une liste de tous les avions dans la base de données.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Récupération réussie des avions",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PlaneResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public List<PlaneResponse> findAll() {
         log.debug("Finding all plane ...");
 
@@ -42,6 +55,16 @@ public class PlaneApiController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Récupérer un avion par ID",
+            description = "Retourne un avion identifié par son ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Récupération réussie de l'avion",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PlaneByIdResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Avion non trouvé",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public PlaneByIdResponse findById(@PathVariable String id) {
         log.debug("Finding plane {} ...", id);
 
@@ -56,6 +79,15 @@ public class PlaneApiController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Créer un nouvel avion",
+            description = "Crée un nouvel avion dans la base de données.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Avion créé avec succès",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Données d'entrée invalides",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public String create(@Valid @RequestBody CreateOrUpdatePlaneRequest request) {
         log.debug("Creating plane ...");
 
@@ -76,6 +108,17 @@ public class PlaneApiController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Mettre à jour un avion existant",
+            description = "Met à jour un avion identifié par son ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Avion mis à jour avec succès",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Avion non trouvé",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Données d'entrée invalides",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public String update(@PathVariable String id, @Valid @RequestBody CreateOrUpdatePlaneRequest request) {
         log.debug("Updating Plane {} ...", id);
 
@@ -96,6 +139,14 @@ public class PlaneApiController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Supprimer un avion par ID",
+            description = "Supprime un avion identifié par son ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Avion supprimé avec succès"),
+            @ApiResponse(responseCode = "404", description = "Avion non trouvé",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public void deleteById(@PathVariable String id) {
         log.debug("Deleting plane {} ...", id);
 

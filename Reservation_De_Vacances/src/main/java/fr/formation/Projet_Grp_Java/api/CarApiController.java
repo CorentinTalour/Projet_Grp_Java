@@ -12,6 +12,11 @@ import fr.formation.Projet_Grp_Java.repo.CompanyRepository;
 import fr.formation.Projet_Grp_Java.request.CreateOrUpdateCarRequest;
 import fr.formation.Projet_Grp_Java.response.CarByIdResponse;
 import fr.formation.Projet_Grp_Java.response.CarResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -57,6 +62,14 @@ public class CarApiController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Récupérer toutes les voitures",
+            description = "Retourne une liste de toutes les voitures dans la BDD")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Récupération réussie des voitures",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CarResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public List<CarResponse> findAll() {
         log.debug("Finding all car ...");
 
@@ -68,6 +81,16 @@ public class CarApiController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Récupérer une voiture par ID",
+            description = "Retourne une seule voiture identifiée par son ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Récupération réussie de la voiture",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CarByIdResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Voiture non trouvée",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
         public CarByIdResponse findById(@PathVariable String id) {
         log.debug("Finding car {} ...", id);
 
@@ -82,6 +105,15 @@ public class CarApiController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Créer une nouvelle voiture",
+            description = "Crée une nouvelle voiture dans la BDD")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Voiture créée avec succès",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Données d'entrée invalides",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public String create(@Valid @RequestBody CreateOrUpdateCarRequest request) {
         log.debug("Creating car ...");
 
@@ -106,6 +138,17 @@ public class CarApiController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Mettre à jour une voiture existante",
+            description = "Met à jour une voiture identifiée par son ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Voiture mise à jour avec succès",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Voiture non trouvée",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Données d'entrée invalides",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public String update(@PathVariable String id, @Valid @RequestBody CreateOrUpdateCarRequest request) {
         log.debug("Updating car {} ...", id);
 
@@ -137,6 +180,14 @@ public class CarApiController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Supprimer une voiture par ID",
+            description = "Supprime une voiture identifiée par son ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Voiture supprimée avec succès"),
+            @ApiResponse(responseCode = "404", description = "Voiture non trouvée",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public void deleteById(@PathVariable String id) {
         log.debug("Deleting car {} ...", id);
 

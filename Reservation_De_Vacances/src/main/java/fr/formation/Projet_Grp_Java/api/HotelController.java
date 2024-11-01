@@ -2,6 +2,11 @@ package fr.formation.Projet_Grp_Java.api;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +40,14 @@ public class HotelController {
     private final CompanyRepository companyRepository;
 
     @GetMapping
+    @Operation(summary = "Récupérer tous les hôtels",
+            description = "Retourne une liste de tous les hôtels dans la base de données.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Récupération réussie des hôtels",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = HotelResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public List<HotelResponse> findAll() {
         log.debug("Finding all videos ...");
 
@@ -45,6 +58,16 @@ public class HotelController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Récupérer un hôtel par ID",
+            description = "Retourne un hôtel identifié par son ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Récupération réussie de l'hôtel",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = HotelResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Hôtel non trouvé",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public HotelResponse findById(@PathVariable String id) {
         log.debug("Finding video {} ...", id);
 
@@ -59,7 +82,15 @@ public class HotelController {
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
-
+    @Operation(summary = "Créer un nouvel hôtel",
+            description = "Crée un nouvel hôtel dans la base de données.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Hôtel créé avec succès",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Données d'entrée invalides",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public String createHotel(@RequestBody HotelRequest hotelRequest) {
 
         Company company = companyRepository.findById(hotelRequest.getCompanyId())
@@ -80,6 +111,17 @@ public class HotelController {
 
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Mettre à jour un hôtel existant",
+            description = "Met à jour un hôtel identifié par son ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Hôtel mis à jour avec succès",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Hôtel non trouvé",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Données d'entrée invalides",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public String update(@PathVariable String id, @RequestBody HotelRequest hotelRequest) {
         log.debug("Updating video {} ...", id);
 
@@ -96,6 +138,14 @@ public class HotelController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Supprimer un hôtel par ID",
+            description = "Supprime un hôtel identifié par son ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Hôtel supprimé avec succès"),
+            @ApiResponse(responseCode = "404", description = "Hôtel non trouvé",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public void deleteById(@PathVariable String id) {
         log.debug("Deleting video {} ...", id);
 
