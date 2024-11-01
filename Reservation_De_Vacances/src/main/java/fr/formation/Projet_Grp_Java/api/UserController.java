@@ -5,6 +5,11 @@ import java.util.List;
 import fr.formation.Projet_Grp_Java.request.AuthRequest;
 import fr.formation.Projet_Grp_Java.response.AuthResponse;
 import fr.formation.Projet_Grp_Java.security.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -26,7 +31,10 @@ import fr.formation.Projet_Grp_Java.request.UserRequest;
 import fr.formation.Projet_Grp_Java.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-
+//Pokeball
+//shrek
+//Fusée
+//POkeball trou au milleu
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -39,6 +47,16 @@ public class UserController {
     private final CompanyRepository companyRepository;
 
     @PostMapping("/auth")
+    @Operation(summary = "Authentifier un utilisateur",
+            description = "Authentifie l'utilisateur avec les informations d'identification fournies.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Authentification réussie",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AuthResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Échec de l'authentification en raison de mauvaises informations d'identification",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public AuthResponse auth(@Valid @RequestBody AuthRequest request) {
         log.debug("Authenticating requested for user {} ...", request.getUsername());
 
@@ -71,6 +89,14 @@ public class UserController {
     }
 
     @GetMapping
+    @Operation(summary = "Récupérer tous les utilisateurs",
+            description = "Retourne une liste de tous les utilisateurs dans la base de données.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Récupération réussie des utilisateurs",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public List<UserResponse> findAll() {
         log.debug("Finding all users ...");
 
@@ -81,6 +107,16 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Récupérer un utilisateur par ID",
+            description = "Retourne un utilisateur identifié par son ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Récupération réussie de l'utilisateur",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public UserResponse findById(@PathVariable String id) {
         log.debug("Finding user {} ...", id);
 
@@ -101,6 +137,15 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Créer un nouvel utilisateur",
+            description = "Crée un nouvel utilisateur dans la base de données.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Utilisateur créé avec succès",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Données d'entrée invalides",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public String createUser(@Valid @RequestBody UserRequest userRequest) {
         Utilisateur user = new Utilisateur();
 
@@ -124,6 +169,17 @@ public class UserController {
 
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Mettre à jour un utilisateur existant",
+            description = "Met à jour un utilisateur identifié par son ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Utilisateur mis à jour avec succès",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Données d'entrée invalides",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public String update(@PathVariable String id, @RequestBody UserRequest request) {
         log.debug("Updating User {} ...", id);
 
@@ -156,6 +212,14 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Supprimer un utilisateur par ID",
+            description = "Supprime un utilisateur identifié par son ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Utilisateur supprimé avec succès"),
+            @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public void deleteById(@PathVariable String id) {
         log.debug("Deleting utilisateur {} ...", id);
 

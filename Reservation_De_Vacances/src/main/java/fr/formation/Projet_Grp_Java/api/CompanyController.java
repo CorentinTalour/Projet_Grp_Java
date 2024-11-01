@@ -5,6 +5,11 @@ import java.util.List;
 import fr.formation.Projet_Grp_Java.exception.CompanyTypeNotFoundException;
 import fr.formation.Projet_Grp_Java.model.CompanyType;
 import fr.formation.Projet_Grp_Java.repo.CompanyTypeRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -60,6 +65,14 @@ public class CompanyController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Récupérer toutes les compagnies",
+            description = "Retourne une liste de toutes les compagnies dans la BDD")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Récupération réussie des compagnies",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CompanyResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public List<CompanyResponse> findAll() {
         log.debug("Finding all companies...");
 
@@ -71,6 +84,16 @@ public class CompanyController {
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Récupérer une compagnie par ID",
+            description = "Retourne une seule compagnie identifiée par son ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Récupération réussie de la compagnie",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CompanyResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Compagnie non trouvée",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public CompanyResponse findById(@PathVariable String id) {
         log.debug("Finding video {} ...", id);
 
@@ -85,7 +108,15 @@ public class CompanyController {
     @PostMapping
     // @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
-
+    @Operation(summary = "Créer une nouvelle compagnie",
+            description = "Crée une nouvelle compagnie dans la BDD")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Compagnie créée avec succès",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Données d'entrée invalides",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public String createCompany(@RequestBody CompanyRequest companyRequest) {
 
         Company company = new Company();
@@ -103,6 +134,17 @@ public class CompanyController {
 
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Mettre à jour une compagnie existante",
+            description = "Met à jour une compagnie identifiée par son ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Compagnie mise à jour avec succès",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Compagnie non trouvée",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Données d'entrée invalides",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public String update(@PathVariable String id, @RequestBody CompanyRequest companyRequest) {
         log.debug("Updating company {} ...", id);
 
@@ -128,6 +170,14 @@ public class CompanyController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Supprimer une compagnie par ID",
+            description = "Supprime une compagnie identifiée par son ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Compagnie supprimée avec succès"),
+            @ApiResponse(responseCode = "404", description = "Compagnie non trouvée",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     public void deleteById(@PathVariable String id) {
         log.debug("Deleting company {} ...", id);
 
