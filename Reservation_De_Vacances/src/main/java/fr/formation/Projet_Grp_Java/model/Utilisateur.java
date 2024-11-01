@@ -48,31 +48,4 @@ public class Utilisateur {
     @JoinColumn(name = "company_id", nullable = true)
     private Company company;
 
-    // Relation avec les réservations de voitures (One-to-Many)
-    /*
-     * @OneToMany(mappedBy = "user")
-     * private List<ReservationVoiture> reservationVoitures;
-     * 
-     * // Relation avec les réservations de vols (One-to-Many)
-     * 
-     * @OneToMany(mappedBy = "user")
-     * private List<ReservationVol> reservationVols;
-     * 
-     * // Relation avec les réservations d'hôtels (One-to-Many)
-     * 
-     * @OneToMany(mappedBy = "user")
-     * private List<ReservationHotel> reservationHotels;
-     * 
-     * // Relation avec l'agence (Many-to-One)
-     * 
-     * @ManyToOne
-     * 
-     * @JoinColumn(name = "agence_id")
-     * private Agence agence;
-     * 
-     * // Autres réservations (One-to-Many)
-     * 
-     * @OneToMany(mappedBy = "user")
-     * private List<Reservation> reservations;
-     */
 }
