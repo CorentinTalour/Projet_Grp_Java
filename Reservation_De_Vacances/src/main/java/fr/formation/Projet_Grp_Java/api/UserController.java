@@ -102,7 +102,6 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public String createUser(@Valid @RequestBody UserRequest userRequest) {
-
         Utilisateur user = new Utilisateur();
 
         if (userRequest.getCompanyId() != null) {
@@ -134,6 +133,10 @@ public class UserController {
             Company company = companyRepository.findById(request.getCompanyId())
                     .orElseThrow(() -> new RuntimeException("Company not found"));
             user.setCompany(company);
+        }
+
+        if (request.getPassword() == null || request.getPassword().isEmpty()) {
+            throw new RuntimeException("Le mot de passe ne peut pas être vide");
         }
 
         user.setName(request.getName());
