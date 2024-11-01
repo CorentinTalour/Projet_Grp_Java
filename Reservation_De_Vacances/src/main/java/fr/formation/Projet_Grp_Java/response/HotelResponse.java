@@ -14,5 +14,5 @@ public class HotelResponse {
     private String telephone;
     private String ville;
     private String adresse;
-
+    private String companyId;
 }
