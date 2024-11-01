@@ -1,7 +1,5 @@
 package fr.formation.Projet_Grp_Java.request;
 
-import fr.formation.Projet_Grp_Java.model.CarStatus;
-import fr.formation.Projet_Grp_Java.model.Company;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

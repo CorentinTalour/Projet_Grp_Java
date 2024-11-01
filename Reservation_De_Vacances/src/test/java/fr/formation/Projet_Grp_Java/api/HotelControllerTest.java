@@ -1,17 +1,13 @@
 package fr.formation.Projet_Grp_Java.api;
 
-import fr.formation.Projet_Grp_Java.model.Company;
 import fr.formation.Projet_Grp_Java.model.Hotel;
 import fr.formation.Projet_Grp_Java.repo.HotelRepository;
-import fr.formation.Projet_Grp_Java.request.CreateOrUpdateCarRequest;
+
 import fr.formation.Projet_Grp_Java.request.HotelRequest;
-import fr.formation.Projet_Grp_Java.security.TestUtil;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;

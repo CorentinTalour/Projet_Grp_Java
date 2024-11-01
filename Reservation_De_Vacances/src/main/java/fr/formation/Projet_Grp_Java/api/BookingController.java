@@ -6,7 +6,6 @@ import fr.formation.Projet_Grp_Java.exception.*;
 import fr.formation.Projet_Grp_Java.model.*;
 import fr.formation.Projet_Grp_Java.repo.*;
 import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -90,7 +89,8 @@ public class BookingController {
     public String createBooking(@Valid @RequestBody BookingRequest bookingRequest, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Validation error: " + bindingResult.getFieldError().getDefaultMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Validation error: " + bindingResult.getFieldError().getDefaultMessage());
         }
 
         Booking booking = new Booking();
@@ -126,11 +126,13 @@ public class BookingController {
 
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public String update(@Valid @PathVariable String id, @RequestBody BookingRequest bookingRequest, BindingResult bindingResult) {
+    public String update(@Valid @PathVariable String id, @RequestBody BookingRequest bookingRequest,
+            BindingResult bindingResult) {
         log.debug("Updating booking {} ...", id);
 
         if (bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Validation error: " + bindingResult.getFieldError().getDefaultMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Validation error: " + bindingResult.getFieldError().getDefaultMessage());
         }
 
         Booking booking = this.bookingRepository.findById(id)
