@@ -1,5 +1,6 @@
 package fr.formation.Projet_Grp_Java.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
 import lombok.Getter;
@@ -26,4 +27,9 @@ public class Car {
     @ManyToOne
     @JoinColumn(name = "car_carStatus_id" , nullable = false)
     private CarStatus carStatus;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false)
+    @JsonBackReference
+    private Company company;
 }

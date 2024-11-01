@@ -1,7 +1,10 @@
 package fr.formation.Projet_Grp_Java.api;
 
+import fr.formation.Projet_Grp_Java.exception.CompanyNotFoundException;
 import fr.formation.Projet_Grp_Java.exception.PlaneNotFoundException;
+import fr.formation.Projet_Grp_Java.model.Company;
 import fr.formation.Projet_Grp_Java.model.Plane;
+import fr.formation.Projet_Grp_Java.repo.CompanyRepository;
 import fr.formation.Projet_Grp_Java.repo.PlaneRepository;
 import fr.formation.Projet_Grp_Java.request.CreateOrUpdatePlaneRequest;
 import fr.formation.Projet_Grp_Java.response.PlaneByIdResponse;
@@ -24,6 +27,7 @@ public class PlaneApiController {
 
 
     private final PlaneRepository repository;
+    private final CompanyRepository companyRepository;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -58,6 +62,10 @@ public class PlaneApiController {
         Plane plane = new Plane();
         BeanUtils.copyProperties(request, plane);
 
+        Company companyId = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(CompanyNotFoundException::new);
+        plane.setCompany(companyId);
+
         this.repository.save(plane);
 
         log.debug("Plane {} created!", plane.getId());
@@ -74,6 +82,10 @@ public class PlaneApiController {
         Plane plane = this.repository.findById(id).orElseThrow(PlaneNotFoundException::new);
 
         BeanUtils.copyProperties(request, plane);
+
+        Company companyId = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(CompanyNotFoundException::new);
+        plane.setCompany(companyId);
 
         this.repository.save(plane);
 

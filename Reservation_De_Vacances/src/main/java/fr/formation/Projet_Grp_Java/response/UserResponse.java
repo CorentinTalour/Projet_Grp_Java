@@ -16,4 +16,6 @@ public class UserResponse {
     private String phone;
     private boolean has_driving_licence;
     private String companyId;
+
+    private boolean admin;
 }

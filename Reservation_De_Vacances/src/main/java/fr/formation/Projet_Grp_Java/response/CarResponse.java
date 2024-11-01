@@ -1,6 +1,7 @@
 package fr.formation.Projet_Grp_Java.response;
 
 import fr.formation.Projet_Grp_Java.model.CarStatus;
+import fr.formation.Projet_Grp_Java.model.Company;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
@@ -14,4 +15,5 @@ public class CarResponse {
     private String carModel;
     private Double carDailyPrice;
     private CarStatus carStatus;
+    private Company company;
 }

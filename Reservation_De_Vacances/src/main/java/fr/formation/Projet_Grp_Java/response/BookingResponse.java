@@ -13,6 +13,8 @@ import lombok.Setter;
 @Builder
 public class BookingResponse {
 
+    private String id;
+
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dateBegin;
 
@@ -21,6 +23,11 @@ public class BookingResponse {
 
     private float price;
 
+    private String user_id;
 
+    private String hotel_id;
+
+    private String plane_id;
+
+    private String car_id;
 }
-

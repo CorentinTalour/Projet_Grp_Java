@@ -106,7 +106,9 @@ public class UserController {
         user.setMail(userRequest.getMail());
         user.setPhone(userRequest.getPhone());
         user.setHasDrivingLicence(userRequest.isHasDrivingLicence());
+        user.setAdmin(userRequest.isAdmin());
         user.setCompany(company);
+        user.setAdmin(userRequest.isAdmin());
 
         utilisateurRepository.save(user);
         return "User created successfully";
@@ -119,7 +121,17 @@ public class UserController {
 
         Utilisateur user = this.utilisateurRepository.findById(id).orElseThrow(UserNotFoundException::new);
 
-        BeanUtils.copyProperties(request, user);
+        Company company = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+
+        user.setName(request.getName());
+        user.setUsername(request.getUsername());
+        user.setPassword(this.passwordEncoder.encode(request.getPassword()));
+        user.setMail(request.getMail());
+        user.setPhone(request.getPhone());
+        user.setHasDrivingLicence(request.isHasDrivingLicence());
+        user.setAdmin(request.isAdmin());
+        user.setCompany(company);
 
         this.utilisateurRepository.save(user);
 

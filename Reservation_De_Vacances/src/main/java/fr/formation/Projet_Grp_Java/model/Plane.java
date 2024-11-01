@@ -1,9 +1,7 @@
 package fr.formation.Projet_Grp_Java.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,4 +29,9 @@ public class Plane {
     @Column(name = "plane_number_of_seats", nullable = false)
     @Min(1) //S'assure que le nombre de sièges est au moins 1
     private Integer numberOfSeats;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false)
+    @JsonBackReference
+    private Company company;
 }
