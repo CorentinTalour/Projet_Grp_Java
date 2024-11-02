@@ -55,7 +55,6 @@ public class Utilisateur {
     // Relation avec l'agence (Many-to-One)
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = true)
-    @JoinColumn(name = "company_id", nullable = false)
     @Schema(description = "Société à laquelle appartient l'utilisateur")
     private Company company;
 
