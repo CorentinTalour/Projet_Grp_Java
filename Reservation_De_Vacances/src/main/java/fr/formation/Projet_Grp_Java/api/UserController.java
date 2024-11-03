@@ -31,10 +31,7 @@ import fr.formation.Projet_Grp_Java.request.UserRequest;
 import fr.formation.Projet_Grp_Java.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-//Pokeball
-//shrek
-//Fusée
-//POkeball trou au milleu
+
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -150,9 +147,11 @@ public class UserController {
         Utilisateur user = new Utilisateur();
 
         if (userRequest.getCompanyId() != null) {
-            Company company = companyRepository.findById(userRequest.getCompanyId())
-                    .orElseThrow(() -> new RuntimeException("Company not found"));
-            user.setCompany(company);
+            if (!userRequest.getCompanyId().isEmpty()) {
+                Company company = companyRepository.findById(userRequest.getCompanyId())
+                        .orElseThrow(() -> new RuntimeException("Company not found"));
+                user.setCompany(company);
+            }
         }
 
         user.setName(userRequest.getName());

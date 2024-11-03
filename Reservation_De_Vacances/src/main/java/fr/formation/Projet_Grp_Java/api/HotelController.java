@@ -49,7 +49,7 @@ public class HotelController {
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
     })
     public List<HotelResponse> findAll() {
-        log.debug("Finding all videos ...");
+        log.debug("Finding all hotel ...");
 
         return this.hotelRepository.findAll()
                 .stream()
@@ -69,7 +69,7 @@ public class HotelController {
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
     })
     public HotelResponse findById(@PathVariable String id) {
-        log.debug("Finding video {} ...", id);
+        log.debug("Finding Hotel {} ...", id);
 
         Hotel hotel = this.hotelRepository.findById(id).orElseThrow(HotelNotFoundException::new);
         HotelResponse resp = HotelResponse.builder().build();
